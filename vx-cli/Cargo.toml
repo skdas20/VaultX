@@ -1,0 +1,36 @@
+[package]
+name = "vx-cli"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "VaultX CLI - A zero-trust developer vault"
+
+[[bin]]
+name = "vx"
+path = "src/main.rs"
+
+[dependencies]
+# Core library
+vx-core = { path = "../vx-core" }
+
+# CLI
+clap = { workspace = true }
+rpassword = { workspace = true }
+tempfile = { workspace = true }
+
+# Error handling
+thiserror = { workspace = true }
+
+# Utilities
+dirs = "5.0"
+
+[dev-dependencies]
+proptest = { workspace = true }
+
+[profile.release]
+opt-level = "z"       # Optimize for size
+lto = true            # Link-time optimization
+codegen-units = 1     # Better optimization
+strip = true          # Strip debug symbols
+panic = "abort"       # Smaller panic handler

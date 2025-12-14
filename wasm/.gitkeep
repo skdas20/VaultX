@@ -1,0 +1,2 @@
+# WASM output directory
+# Build with: wasm-pack build --target web vx-core
