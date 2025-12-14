@@ -69,16 +69,13 @@ jobs:
           key: ${{ runner.os }}-target-${{ matrix.target }}-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Build release binary
-        working-directory: vaultx
         run: cargo build --release --target ${{ matrix.target }} --verbose
 
       - name: Strip binary (Linux/macOS)
         if: matrix.os != 'windows-latest'
-        working-directory: vaultx
-        run: strip target/${{ matrix.target }}/release/${{ matrix.artifact_name }}
+        run: strip target/${{ matrix.target }}/release/${{ matrix.artifact_name }} || true
 
       - name: Rename binary
-        working-directory: vaultx
         shell: bash
         run: |
           cp target/${{ matrix.target }}/release/${{ matrix.artifact_name }} ${{ matrix.asset_name }}
@@ -87,11 +84,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.asset_name }}
-          path: vaultx/${{ matrix.asset_name }}
+          path: ${{ matrix.asset_name }}
 
       - name: Get file size
         shell: bash
-        working-directory: vaultx
         run: |
           ls -lh ${{ matrix.asset_name }}
           echo "Binary size: $(du -h ${{ matrix.asset_name }} | cut -f1)"
@@ -189,9 +185,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Run tests
-        working-directory: vaultx
         run: cargo test --verbose
 
       - name: Run property-based tests
-        working-directory: vaultx
         run: cargo test --release --verbose

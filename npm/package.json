@@ -1,0 +1,50 @@
+{
+  "name": "vaultx",
+  "version": "0.1.0",
+  "description": "A secure, modern CLI tool for managing secrets with TTL-based expiration",
+  "keywords": [
+    "vault",
+    "secrets",
+    "password",
+    "encryption",
+    "security",
+    "cli",
+    "credential-management"
+  ],
+  "homepage": "https://github.com/skdas20/VaultX",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/skdas20/VaultX.git"
+  },
+  "bugs": {
+    "url": "https://github.com/skdas20/VaultX/issues"
+  },
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
+  "bin": {
+    "vx": "bin/vx.js"
+  },
+  "scripts": {
+    "postinstall": "node scripts/install.js",
+    "preuninstall": "node scripts/uninstall.js"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "files": [
+    "bin",
+    "scripts",
+    "binaries"
+  ],
+  "preferGlobal": true,
+  "devDependencies": {}
+}
