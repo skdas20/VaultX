@@ -48,13 +48,22 @@ enum Commands {
         ttl: Option<String>,
     },
 
-    /// Get a secret from a project
+    /// Get a secret from a project (or all secrets if no key specified)
     Get {
         /// Project name
         project: String,
 
-        /// Secret key name
-        key: String,
+        /// Secret key name (optional - omit to see all secrets)
+        key: Option<String>,
+    },
+
+    /// List all projects in the vault
+    List,
+
+    /// List all secrets in a project
+    Secrets {
+        /// Project name
+        project: String,
     },
 
     /// Audit the vault for security issues
@@ -108,7 +117,9 @@ fn run() -> Result<(), CliError> {
             env,
             ttl,
         } => commands::add::execute(&project, &key, file, env, ttl),
-        Commands::Get { project, key } => commands::get::execute(&project, &key),
+        Commands::Get { project, key } => commands::get::execute(&project, key.as_deref()),
+        Commands::List => commands::list::execute(),
+        Commands::Secrets { project } => commands::list_secrets::execute(&project),
         Commands::Audit => commands::audit::execute(),
         Commands::Ssh { command } => match command {
             SshCommands::Init { name } => commands::ssh::init(&name),

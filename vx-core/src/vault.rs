@@ -225,9 +225,20 @@ impl Default for Vault {
 /// | Reserved: 8B   |                  | + Auth Tag (16B)     |
 /// +----------------+------------------+----------------------+
 /// ```
-pub fn save_vault(vault: &Vault, password: &[u8]) -> Result<Vec<u8>, VaultError> {
-    // Generate salt for key derivation
-    let salt = crypto::generate_salt();
+/// Saves a vault with optional salt preservation.
+/// If salt is provided, it will be used (for updating existing vaults).
+/// If salt is None, a new salt will be generated (for creating new vaults).
+pub fn save_vault_with_salt(
+    vault: &Vault,
+    password: &[u8],
+    salt: Option<&[u8; SALT_SIZE]>,
+) -> Result<Vec<u8>, VaultError> {
+    // Use provided salt or generate new one
+    let salt = if let Some(s) = salt {
+        s.clone()
+    } else {
+        crypto::generate_salt()
+    };
 
     // Derive encryption key
     let key = crypto::derive_key(password, &salt)?;
@@ -261,6 +272,11 @@ pub fn save_vault(vault: &Vault, password: &[u8]) -> Result<Vec<u8>, VaultError>
     output.extend_from_slice(&encrypted.ciphertext);
 
     Ok(output)
+}
+
+/// Convenience function: saves a new vault with generated salt.
+pub fn save_vault(vault: &Vault, password: &[u8]) -> Result<Vec<u8>, VaultError> {
+    save_vault_with_salt(vault, password, None)
 }
 
 /// Loads and decrypts a vault from storage.
