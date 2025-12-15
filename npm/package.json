@@ -1,6 +1,6 @@
 {
-  "name": "vaultx",
-  "version": "0.1.0",
+  "name": "@vaultx-official/vaultx",
+  "version": "0.2.0",
   "description": "A secure, modern CLI tool for managing secrets with TTL-based expiration",
   "keywords": [
     "vault",
@@ -14,12 +14,12 @@
   "homepage": "https://github.com/skdas20/VaultX",
   "repository": {
     "type": "git",
-    "url": "https://github.com/skdas20/VaultX.git"
+    "url": "git+https://github.com/skdas20/VaultX.git"
   },
   "bugs": {
     "url": "https://github.com/skdas20/VaultX/issues"
   },
-  "author": "Your Name <your.email@example.com>",
+  "author": "VaultX Official <skdas5405@gmail.com>",
   "license": "MIT",
   "bin": {
     "vx": "bin/vx.js"
