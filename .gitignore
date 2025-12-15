@@ -28,4 +28,3 @@ desktop.ini
 # Logs
 *.log
 npm/binaries/
-npm/rust-src/
