@@ -28,24 +28,31 @@ function getPlatform() {
   switch (platform) {
     case 'linux':
       if (arch === 'x64') {
-        binaryName = 'vx-linux-x64';
-        downloadUrl = `https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/vx-linux-x64`;
-      } else if (arch === 'arm64') {
-        console.warn('⚠️  ARM64 Linux not yet available. Please build from source.');
-        process.exit(1);
+        binaryName = 'vx-x86_64-unknown-linux-gnu';
+        // Use /releases/latest/download/... if tag is 'latest'
+        const baseUrl = RELEASE_TAG === 'latest' 
+          ? `https://github.com/${GITHUB_REPO}/releases/latest/download`
+          : `https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}`;
+        downloadUrl = `${baseUrl}/${binaryName}`;
       } else {
-        console.error(`❌ Unsupported Linux architecture: ${arch}`);
+        console.warn(`⚠️  Linux architecture '${arch}' not explicitly supported. Please build from source.`);
         process.exit(1);
       }
       break;
 
     case 'darwin':
       if (arch === 'x64') {
-        binaryName = 'vx-macos-x64';
-        downloadUrl = `https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/vx-macos-x64`;
+        binaryName = 'vx-x86_64-apple-darwin';
+        const baseUrl = RELEASE_TAG === 'latest' 
+          ? `https://github.com/${GITHUB_REPO}/releases/latest/download`
+          : `https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}`;
+        downloadUrl = `${baseUrl}/${binaryName}`;
       } else if (arch === 'arm64') {
-        binaryName = 'vx-macos-arm64';
-        downloadUrl = `https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/vx-macos-arm64`;
+        binaryName = 'vx-aarch64-apple-darwin';
+        const baseUrl = RELEASE_TAG === 'latest' 
+          ? `https://github.com/${GITHUB_REPO}/releases/latest/download`
+          : `https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}`;
+        downloadUrl = `${baseUrl}/${binaryName}`;
       } else {
         console.error(`❌ Unsupported macOS architecture: ${arch}`);
         process.exit(1);
@@ -54,8 +61,11 @@ function getPlatform() {
 
     case 'win32':
       if (arch === 'x64') {
-        binaryName = 'vx-windows-x64.exe';
-        downloadUrl = `https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/vx-windows-x64.exe`;
+        binaryName = 'vx-x86_64-pc-windows-msvc.exe';
+        const baseUrl = RELEASE_TAG === 'latest' 
+          ? `https://github.com/${GITHUB_REPO}/releases/latest/download`
+          : `https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}`;
+        downloadUrl = `${baseUrl}/${binaryName}`;
       } else {
         console.error(`❌ Unsupported Windows architecture: ${arch}`);
         process.exit(1);

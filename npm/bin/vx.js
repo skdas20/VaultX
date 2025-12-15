@@ -22,14 +22,14 @@ function findBinary() {
   // Determine binary name based on platform
   switch (platform) {
     case 'linux':
-      if (arch === 'x64') binaryName = 'vx-linux-x64';
+      if (arch === 'x64') binaryName = 'vx-x86_64-unknown-linux-gnu';
       break;
     case 'darwin':
-      if (arch === 'x64') binaryName = 'vx-macos-x64';
-      else if (arch === 'arm64') binaryName = 'vx-macos-arm64';
+      if (arch === 'x64') binaryName = 'vx-x86_64-apple-darwin';
+      else if (arch === 'arm64') binaryName = 'vx-aarch64-apple-darwin';
       break;
     case 'win32':
-      if (arch === 'x64') binaryName = 'vx-windows-x64.exe';
+      if (arch === 'x64') binaryName = 'vx-x86_64-pc-windows-msvc.exe';
       break;
   }
 
