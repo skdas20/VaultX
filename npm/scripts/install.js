@@ -14,7 +14,9 @@ const https = require('https');
 const { execSync } = require('child_process');
 
 const GITHUB_REPO = 'skdas20/VaultX';
-const RELEASE_TAG = 'latest'; // or specific version like 'v0.1.0'
+// Get version from package.json
+const packageJson = require('../package.json');
+const RELEASE_TAG = `v${packageJson.version}`; // e.g., 'v0.3.4'
 const BINARY_DIR = path.join(__dirname, '..', 'binaries');
 
 // Detect platform and architecture
@@ -29,11 +31,7 @@ function getPlatform() {
     case 'linux':
       if (arch === 'x64') {
         binaryName = 'vx-x86_64-unknown-linux-gnu';
-        // Use /releases/latest/download/... if tag is 'latest'
-        const baseUrl = RELEASE_TAG === 'latest' 
-          ? `https://github.com/${GITHUB_REPO}/releases/latest/download`
-          : `https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}`;
-        downloadUrl = `${baseUrl}/${binaryName}`;
+        downloadUrl = `https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/${binaryName}`;
       } else {
         console.warn(`⚠️  Linux architecture '${arch}' not explicitly supported. Please build from source.`);
         process.exit(1);
@@ -43,16 +41,10 @@ function getPlatform() {
     case 'darwin':
       if (arch === 'x64') {
         binaryName = 'vx-x86_64-apple-darwin';
-        const baseUrl = RELEASE_TAG === 'latest' 
-          ? `https://github.com/${GITHUB_REPO}/releases/latest/download`
-          : `https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}`;
-        downloadUrl = `${baseUrl}/${binaryName}`;
+        downloadUrl = `https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/${binaryName}`;
       } else if (arch === 'arm64') {
         binaryName = 'vx-aarch64-apple-darwin';
-        const baseUrl = RELEASE_TAG === 'latest' 
-          ? `https://github.com/${GITHUB_REPO}/releases/latest/download`
-          : `https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}`;
-        downloadUrl = `${baseUrl}/${binaryName}`;
+        downloadUrl = `https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/${binaryName}`;
       } else {
         console.error(`❌ Unsupported macOS architecture: ${arch}`);
         process.exit(1);
@@ -62,10 +54,7 @@ function getPlatform() {
     case 'win32':
       if (arch === 'x64') {
         binaryName = 'vx-x86_64-pc-windows-msvc.exe';
-        const baseUrl = RELEASE_TAG === 'latest' 
-          ? `https://github.com/${GITHUB_REPO}/releases/latest/download`
-          : `https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}`;
-        downloadUrl = `${baseUrl}/${binaryName}`;
+        downloadUrl = `https://github.com/${GITHUB_REPO}/releases/download/${RELEASE_TAG}/${binaryName}`;
       } else {
         console.error(`❌ Unsupported Windows architecture: ${arch}`);
         process.exit(1);
