@@ -65,3 +65,14 @@ pub fn confirm(prompt: &str) -> Result<bool, CliError> {
 
     Ok(input.trim().eq_ignore_ascii_case("y") || input.trim().eq_ignore_ascii_case("yes"))
 }
+
+/// Reads standard input with echo enabled.
+pub fn read_input(prompt: &str) -> Result<String, CliError> {
+    print!("{}", prompt);
+    io::stdout().flush()?;
+
+    let mut input = String::new();
+    io::stdin().read_line(&mut input)?;
+
+    Ok(input.trim().to_string())
+}

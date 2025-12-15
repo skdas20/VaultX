@@ -205,6 +205,29 @@ impl Vault {
 
         Ok((identity.public_key.clone(), private_key))
     }
+
+    /// Removes a project and all its secrets.
+    pub fn remove_project(&mut self, name: &str) -> Result<(), VaultError> {
+        if self.projects.remove(name).is_some() {
+            Ok(())
+        } else {
+            Err(VaultError::ProjectNotFound(name.to_string()))
+        }
+    }
+
+    /// Removes a secret from a project.
+    pub fn remove_secret(&mut self, project: &str, key: &str) -> Result<(), VaultError> {
+        let proj = self
+            .projects
+            .get_mut(project)
+            .ok_or_else(|| VaultError::ProjectNotFound(project.to_string()))?;
+
+        if proj.secrets.remove(key).is_some() {
+            Ok(())
+        } else {
+            Err(VaultError::SecretNotFound(key.to_string()))
+        }
+    }
 }
 
 impl Default for Vault {

@@ -32,8 +32,8 @@ enum Commands {
         /// Project name
         project: String,
 
-        /// Secret key name
-        key: String,
+        /// Secret key name (optional for interactive mode)
+        key: Option<String>,
 
         /// Read secret from file
         #[arg(long, value_name = "FILE")]
@@ -75,14 +75,20 @@ enum Commands {
         command: SshCommands,
     },
 
-    /// Remove a secret from the vault
+    /// Remove a secret or project from the vault
     Remove {
-        /// The name of the secret to remove
-        key: String,
+        /// Project name
+        project: String,
+
+        /// The name of the secret to remove (optional - if omitted, removes the entire project)
+        key: Option<String>,
     },
 
     /// Edit a secret in the vault
     Edit {
+        /// Project name
+        project: String,
+
         /// The name of the secret to edit
         key: String,
     },
@@ -135,7 +141,7 @@ fn run() -> Result<(), CliError> {
             file,
             env,
             ttl,
-        } => commands::add::execute(&project, &key, file, env, ttl),
+        } => commands::add::execute(&project, key.as_deref(), file, env, ttl),
         Commands::Get { project, key } => commands::get::execute(&project, key.as_deref()),
         Commands::List => commands::list::execute(),
         Commands::Secrets { project } => commands::list_secrets::execute(&project),
@@ -148,8 +154,8 @@ fn run() -> Result<(), CliError> {
                 args,
             } => commands::ssh::connect(&identity, &target, &args),
         },
-        Commands::Remove { key } => commands::remove::execute(&key),
-        Commands::Edit { key } => commands::edit::execute(&key),
+        Commands::Remove { project, key } => commands::remove::execute(&project, key.as_deref()),
+        Commands::Edit { project, key } => commands::edit::execute(&project, &key),
         Commands::Update { yes } => commands::update::execute(yes),
     }
 }
