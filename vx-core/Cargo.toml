@@ -1,6 +1,6 @@
 [package]
 name = "vx-core"
-version = "0.3.0"
+version = "0.3.3"
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
