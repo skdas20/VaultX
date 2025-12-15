@@ -145,18 +145,29 @@ async function install() {
 
     const binaryPath = path.join(BINARY_DIR, binaryName);
 
-    try {
-      // Try downloading binary first
-      console.log('📦 Downloading binary...');
-      await downloadFile(downloadUrl, binaryPath);
-    } catch (downloadError) {
-      console.warn(`⚠️  Download failed: ${downloadError.message}`);
-      console.log('🔄 Attempting to build from source...');
-      
+    // Check if binary is already bundled with the package
+    if (fs.existsSync(binaryPath)) {
+      console.log('✅ Found bundled binary, skipping download');
+    } else {
       try {
-        await buildFromSource(binaryName, platform);
-      } catch (buildError) {
-        throw new Error(`Download failed and build from source failed: ${buildError.message}`);
+        // Try downloading binary from GitHub
+        console.log('📦 Downloading binary...');
+        await downloadFile(downloadUrl, binaryPath);
+      } catch (downloadError) {
+        console.warn(`⚠️  Download failed: ${downloadError.message}`);
+        console.log('🔄 Attempting fallback options...');
+
+        // Check if binary exists as fallback in binaries directory
+        if (fs.existsSync(binaryPath)) {
+          console.log('✅ Using bundled fallback binary');
+        } else {
+          console.log('🔄 Attempting to build from source...');
+          try {
+            await buildFromSource(binaryName, platform);
+          } catch (buildError) {
+            throw new Error(`Download failed and build from source failed: ${buildError.message}`);
+          }
+        }
       }
     }
 
