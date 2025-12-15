@@ -116,11 +116,25 @@ jobs:
       - name: Create checksums
         run: |
           cd artifacts
-          for dir in */; do
-            cd "$dir"
-            sha256sum * > checksums.txt
-            cd ..
-          done
+          find . -type f ! -name "checksums.txt" -exec sha256sum {} \; > checksums.txt
+          echo "=== Checksums created ==="
+          cat checksums.txt
+          echo "=== Checking if checksums.txt exists ==="
+          ls -lh checksums.txt
+
+      - name: Verify files before release
+        run: |
+          echo "=== All files in artifacts ==="
+          find artifacts -type f
+          echo ""
+          echo "=== Checking checksums.txt ==="
+          if [ -f artifacts/checksums.txt ]; then
+            echo "✓ checksums.txt exists"
+            wc -l artifacts/checksums.txt
+          else
+            echo "✗ checksums.txt NOT found!"
+            exit 1
+          fi
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
@@ -130,7 +144,7 @@ jobs:
             artifacts/vx-x86_64-unknown-linux-gnu/vx-x86_64-unknown-linux-gnu
             artifacts/vx-x86_64-apple-darwin/vx-x86_64-apple-darwin
             artifacts/vx-aarch64-apple-darwin/vx-aarch64-apple-darwin
-            artifacts/*/checksums.txt
+            artifacts/checksums.txt
           body: |
             ## VaultX Release ${{ github.ref_name }}
             
