@@ -1,10 +1,10 @@
 [package]
 name = "vx-core"
-version.workspace = true
+version = "0.2.0"
 edition.workspace = true
 authors.workspace = true
 license.workspace = true
-description = "Core cryptographic library for VaultX - compiled to WebAssembly"
+description = "Core library for VaultX"
 
 [lib]
 crate-type = ["cdylib", "rlib"]
