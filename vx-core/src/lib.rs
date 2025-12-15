@@ -14,6 +14,7 @@ pub mod ttl;
 pub mod vault;
 
 // Re-export main types for convenience
+pub use crypto::KEY_SIZE;
 pub use error::{CryptoError, SshError, TtlError, VaultError};
 pub use vault::{Project, Secret, SshIdentity, Vault};
 

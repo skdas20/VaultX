@@ -154,10 +154,22 @@ async function install() {
       fs.mkdirSync(BINARY_DIR, { recursive: true });
     }
 
-    // Download binary
-    console.log('📦 Downloading binary...');
     const binaryPath = path.join(BINARY_DIR, binaryName);
-    await downloadFile(downloadUrl, binaryPath);
+
+    try {
+      // Try downloading binary first
+      console.log('📦 Downloading binary...');
+      await downloadFile(downloadUrl, binaryPath);
+    } catch (downloadError) {
+      console.warn(`⚠️  Download failed: ${downloadError.message}`);
+      console.log('🔄 Attempting to build from source...');
+      
+      try {
+        await buildFromSource(binaryName, platform);
+      } catch (buildError) {
+        throw new Error(`Download failed and build from source failed: ${buildError.message}`);
+      }
+    }
 
     // Make executable (Linux/macOS)
     if (platform !== 'win32') {
@@ -186,6 +198,55 @@ async function install() {
     console.error('  3. Try building from source: https://github.com/skdas20/VaultX');
     process.exit(1);
   }
+}
+
+// Build from source fallback
+function buildFromSource(targetBinaryName, platform) {
+  return new Promise((resolve, reject) => {
+    try {
+      // Check if cargo is available
+      try {
+        execSync('cargo --version', { stdio: 'ignore' });
+      } catch (e) {
+        throw new Error('Rust/Cargo is not installed');
+      }
+
+      // Find project root (assuming we are in npm/scripts/ or similar)
+      // This script is in npm/scripts/install.js, so root is two dirs up
+      const projectRoot = path.resolve(__dirname, '..', '..');
+      const cargoTomlPath = path.join(projectRoot, 'Cargo.toml');
+
+      if (!fs.existsSync(cargoTomlPath)) {
+        throw new Error(`Cargo.toml not found at ${cargoTomlPath}. Are you installing from the git repo?`);
+      }
+
+      console.log('🔨 Building release binary with Cargo...');
+      // We are building the CLI member 'vx-cli' mostly, but workspace build is fine
+      // The binary comes from vx-cli
+      execSync('cargo build --release -p vx-cli', { 
+        cwd: projectRoot, 
+        stdio: 'inherit' 
+      });
+
+      // Locate the built binary
+      // It should be in target/release/vx (or vx.exe)
+      const builtBinaryName = platform === 'win32' ? 'vx.exe' : 'vx';
+      const sourcePath = path.join(projectRoot, 'target', 'release', builtBinaryName);
+
+      if (!fs.existsSync(sourcePath)) {
+        throw new Error(`Built binary not found at ${sourcePath}`);
+      }
+
+      // Copy to destination
+      const destPath = path.join(BINARY_DIR, targetBinaryName);
+      fs.copyFileSync(sourcePath, destPath);
+      console.log(`✅ Binary built and copied to ${destPath}`);
+      resolve();
+
+    } catch (err) {
+      reject(err);
+    }
+  });
 }
 
 // Run installation if this script is executed directly
