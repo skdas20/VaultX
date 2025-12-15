@@ -6,7 +6,7 @@ use vx_core::ttl::{calculate_expiry, is_expired, parse_ttl};
 /// Strategy for generating valid TTL strings
 fn arb_ttl_string() -> impl Strategy<Value = (String, u64)> {
     (1u64..10000, prop_oneof!["m", "h", "d", "w"]).prop_map(|(n, unit)| {
-        let multiplier = match unit {
+        let multiplier = match unit.as_str() {
             "m" => 60,
             "h" => 3600,
             "d" => 86400,

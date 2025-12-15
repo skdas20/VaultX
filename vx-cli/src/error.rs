@@ -43,4 +43,10 @@ pub enum CliError {
 
     #[error("Security violation: {0}")]
     SecurityViolation(String),
+
+    #[error("Update failed: {0}")]
+    UpdateError(String),
+
+    #[error("{0}")]
+    Generic(String),
 }

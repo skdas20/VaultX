@@ -24,6 +24,7 @@ thiserror = { workspace = true }
 
 # Utilities
 dirs = "5.0"
+self_update = "0.39"
 
 [dev-dependencies]
 proptest = { workspace = true }
