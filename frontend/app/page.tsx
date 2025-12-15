@@ -11,25 +11,21 @@ export default function Home() {
       
       {/* Navigation */}
       <nav className="relative z-50 container mx-auto px-6 py-6 flex justify-between items-center bg-[#050505]/80 backdrop-blur-md sticky top-0 border-b border-white/5">
-        <div className="flex flex-col">
-          <span className="text-3xl font-black tracking-tighter text-white">
+        <Link href="/" className="flex flex-col">
+          <span className="text-3xl font-black tracking-tighter text-cyan-400">
             VAULTX
           </span>
           <span className="text-[0.6rem] tracking-[0.2em] text-cyan-500 font-bold uppercase">
             Fast. Secure. Modern.
           </span>
-        </div>
+        </Link>
         
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-400">
+        <div className="flex items-center gap-8 text-sm font-medium text-zinc-400">
           <Link href="#features" className="hover:text-cyan-400 transition-colors">Features</Link>
-          <Link href="#install" className="hover:text-cyan-400 transition-colors">Install</Link>
-          <Link href="#docs" className="hover:text-cyan-400 transition-colors">Docs</Link>
-          <Link href="#about" className="hover:text-cyan-400 transition-colors">About</Link>
+          <Link href="/install" className="hover:text-cyan-400 transition-colors">Install</Link>
+          <Link href="/docs" className="hover:text-cyan-400 transition-colors">Docs</Link>
+          <Link href="/about" className="hover:text-cyan-400 transition-colors">About</Link>
         </div>
-
-        <Button className="hidden md:flex bg-white text-black hover:bg-zinc-200 border border-transparent rounded-full px-6 font-bold transition-all">
-          INSTALL NOW
-        </Button>
       </nav>
 
       {/* Hero Section */}
@@ -72,10 +68,8 @@ export default function Home() {
 
       {/* Footer / Credits */}
       <footer className="container mx-auto px-6 py-12 mt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center text-sm text-zinc-600">
-        <div className="flex gap-6 mb-4 md:mb-0 font-medium">
-          <Link href="#" className="hover:text-white transition-colors">Twitter</Link>
-          <Link href="#" className="hover:text-white transition-colors">GitHub</Link>
-          <Link href="#" className="hover:text-white transition-colors">Instagram</Link>
+        <div className="mb-4 md:mb-0 font-medium">
+          By <Link href="https://www.linkedin.com/in/sumitkumardas-ai" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:text-cyan-300 transition-colors">Sumit Kumar Das</Link>
         </div>
         <div>
            © 2025 VaultX. All Rights Reserved.
