@@ -1,6 +1,6 @@
 {
   "name": "@vaultx-official/vaultx",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A secure, modern CLI tool for managing secrets with TTL-based expiration",
   "keywords": [
     "vault",
