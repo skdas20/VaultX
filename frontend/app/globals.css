@@ -54,3 +54,35 @@
 .hero-gradient {
   background: radial-gradient(circle at center, rgba(0, 240, 255, 0.15) 0%, transparent 70%);
 }
+
+@keyframes wave1 {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(-100px) translateY(20px);
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+}
+
+@keyframes wave2 {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(120px) translateY(-30px);
+  }
+  100% {
+    transform: translateX(0) translateY(0);
+  }
+}
+
+.animate-wave1 {
+  animation: wave1 18s ease-in-out infinite;
+}
+
+.animate-wave2 {
+  animation: wave2 22s ease-in-out infinite;
+}
