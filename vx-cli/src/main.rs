@@ -74,6 +74,25 @@ enum Commands {
         #[command(subcommand)]
         command: SshCommands,
     },
+
+    /// Remove a secret from the vault
+    Remove {
+        /// The name of the secret to remove
+        key: String,
+    },
+
+    /// Edit a secret in the vault
+    Edit {
+        /// The name of the secret to edit
+        key: String,
+    },
+
+    /// Update the VX CLI to the latest version
+    Update {
+        /// Skip confirmation
+        #[arg(short = 'y', long)]
+        yes: bool,
+    },
 }
 
 #[derive(Subcommand)]
@@ -129,5 +148,8 @@ fn run() -> Result<(), CliError> {
                 args,
             } => commands::ssh::connect(&identity, &target, &args),
         },
+        Commands::Remove { key } => commands::remove::execute(&key),
+        Commands::Edit { key } => commands::edit::execute(&key),
+        Commands::Update { yes } => commands::update::execute(yes),
     }
 }

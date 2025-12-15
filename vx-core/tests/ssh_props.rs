@@ -86,7 +86,7 @@ proptest! {
         // Decrypt
         let decrypted = decrypt(&encrypted, &encryption_key).unwrap();
 
-        prop_assert_eq!(decrypted, private_key_bytes);
+        prop_assert_eq!(&decrypted, &private_key_bytes);
 
         // Should still be valid key
         let signing_key = reconstruct_signing_key(&decrypted).unwrap();

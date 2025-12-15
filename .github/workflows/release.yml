@@ -6,6 +6,9 @@ on:
       - 'v*'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 env:
   CARGO_TERM_COLOR: always
 
@@ -21,25 +24,25 @@ jobs:
           - os: windows-latest
             target: x86_64-pc-windows-msvc
             artifact_name: vx.exe
-            asset_name: vx-windows-x64.exe
+            asset_name: vx-x86_64-pc-windows-msvc.exe
           
           # Linux
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
             artifact_name: vx
-            asset_name: vx-linux-x64
+            asset_name: vx-x86_64-unknown-linux-gnu
           
           # macOS Intel
           - os: macos-latest
             target: x86_64-apple-darwin
             artifact_name: vx
-            asset_name: vx-macos-x64
+            asset_name: vx-x86_64-apple-darwin
           
           # macOS ARM (M1/M2)
           - os: macos-latest
             target: aarch64-apple-darwin
             artifact_name: vx
-            asset_name: vx-macos-arm64
+            asset_name: vx-aarch64-apple-darwin
 
     steps:
       - name: Checkout code
@@ -123,10 +126,10 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            artifacts/vx-windows-x64/vx-windows-x64.exe
-            artifacts/vx-linux-x64/vx-linux-x64
-            artifacts/vx-macos-x64/vx-macos-x64
-            artifacts/vx-macos-arm64/vx-macos-arm64
+            artifacts/vx-x86_64-pc-windows-msvc.exe/vx-x86_64-pc-windows-msvc.exe
+            artifacts/vx-x86_64-unknown-linux-gnu/vx-x86_64-unknown-linux-gnu
+            artifacts/vx-x86_64-apple-darwin/vx-x86_64-apple-darwin
+            artifacts/vx-aarch64-apple-darwin/vx-aarch64-apple-darwin
             artifacts/*/checksums.txt
           body: |
             ## VaultX Release ${{ github.ref_name }}
@@ -135,30 +138,33 @@ jobs:
             
             **Windows:**
             ```powershell
-            # Download vx-windows-x64.exe
+            # Download vx-x86_64-pc-windows-msvc.exe
             # Rename to vx.exe
             # Move to a directory in your PATH
             ```
             
             **Linux:**
             ```bash
-            # Download vx-linux-x64
-            chmod +x vx-linux-x64
-            sudo mv vx-linux-x64 /usr/local/bin/vx
+            # Download vx-x86_64-unknown-linux-gnu
+            mv vx-x86_64-unknown-linux-gnu vx
+            chmod +x vx
+            sudo mv vx /usr/local/bin/vx
             ```
             
             **macOS Intel:**
             ```bash
-            # Download vx-macos-x64
-            chmod +x vx-macos-x64
-            sudo mv vx-macos-x64 /usr/local/bin/vx
+            # Download vx-x86_64-apple-darwin
+            mv vx-x86_64-apple-darwin vx
+            chmod +x vx
+            sudo mv vx /usr/local/bin/vx
             ```
             
             **macOS ARM (M1/M2):**
             ```bash
-            # Download vx-macos-arm64
-            chmod +x vx-macos-arm64
-            sudo mv vx-macos-arm64 /usr/local/bin/vx
+            # Download vx-aarch64-apple-darwin
+            mv vx-aarch64-apple-darwin vx
+            chmod +x vx
+            sudo mv vx /usr/local/bin/vx
             ```
             
             ### Verify Installation
