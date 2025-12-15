@@ -22,6 +22,41 @@ VaultX is a local-first security tool for developers and DevOps engineers that s
 
 ## Installation
 
+### Quick Install with npm (Recommended)
+
+```bash
+npm install -g vaultx
+vx --version  # Verify installation
+```
+
+That's it! The package automatically detects your OS and downloads the right binary.
+
+**Requires:** Node.js 14+ | **Works on:** Linux, macOS, Windows
+
+See [npm/README.md](npm/README.md) for detailed instructions.
+
+### Download Pre-built Binaries
+
+Download from [Releases](https://github.com/skdas20/VaultX/releases):
+- **Windows**: vx-windows-x64.exe (~3 MB)
+- **Linux**: vx-linux-x64 (~2-3 MB)
+- **macOS Intel**: vx-macos-x64 (~2-3 MB)
+- **macOS ARM**: vx-macos-arm64 (~2-3 MB)
+
+### Build from Source
+
+Requirements: Rust 1.70+, Cargo
+
+```bash
+git clone https://github.com/skdas20/VaultX.git
+cd VaultX
+./build.sh          # Auto-detects your OS
+# or
+cargo build --release
+```
+
+See [PLATFORM_BUILD.md](PLATFORM_BUILD.md) for detailed instructions by platform.
+
 ### Quick Start (Windows)
 
 ```powershell
@@ -29,14 +64,6 @@ cd vaultx
 cargo build --release
 # Binary at: target\release\vx.exe (~2-3 MB)
 ```
-
-### Download Pre-built Binaries
-
-Download from [Releases](https://github.com/vaultx/vaultx/releases):
-- **Windows**: vx-windows-x64.exe (~3 MB)
-- **Linux**: vx-linux-x64 (~2-3 MB)
-- **macOS Intel**: vx-macos-x64 (~2-3 MB)
-- **macOS ARM**: vx-macos-arm64 (~2-3 MB)
 
 See [QUICKSTART.md](QUICKSTART.md) for detailed instructions.
 
