@@ -1,0 +1,57 @@
+# npm publish ignore file
+# Only include necessary files for npm distribution
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Test files
+test/
+tests/
+*.test.js
+*.spec.js
+
+# Build artifacts
+target/
+*.o
+*.a
+*.so
+Cargo.lock
+
+# Rust
+Cargo.toml
+src/
+*.rs
+
+# Documentation (except package README)
+docs/
+*.md
+!npm/README.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Dev dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# System
+.env
+.env.local
+
+# Cache
+.cargo/
+.npm/
+dist/

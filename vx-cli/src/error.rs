@@ -35,6 +35,9 @@ pub enum CliError {
     #[error("Vault not initialized. Run 'vx init <project>' first.")]
     VaultNotFound,
 
+    #[error("Project not found: {0}")]
+    ProjectNotFound(String),
+
     #[error("SSH connection failed: {0}")]
     SshError(String),
 

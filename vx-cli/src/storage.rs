@@ -107,6 +107,9 @@ pub fn load_vault_with_key(password: &[u8]) -> Result<(Vault, [u8; KEY_SIZE]), C
 /// # Security
 /// Uses write-to-temp-then-rename pattern to prevent corruption
 /// from interrupted writes.
+/// 
+/// For existing vaults, preserves the original salt to ensure
+/// consistent encryption key derivation.
 pub fn save_vault(vault: &Vault, password: &[u8]) -> Result<(), CliError> {
     let path = vault_path()?;
     let dir = vault_dir()?;
@@ -116,8 +119,19 @@ pub fn save_vault(vault: &Vault, password: &[u8]) -> Result<(), CliError> {
         fs::create_dir_all(&dir)?;
     }
 
-    // Serialize and encrypt
-    let data = vault::save_vault(vault, password)?;
+    // Extract existing salt if vault exists, otherwise None for new vault
+    let existing_salt = if path.exists() {
+        Some(extract_salt()?)
+    } else {
+        None
+    };
+
+    // Serialize and encrypt, preserving salt if it exists
+    let data = if let Some(salt) = existing_salt {
+        vault::save_vault_with_salt(vault, password, Some(&salt))?
+    } else {
+        vault::save_vault(vault, password)?
+    };
 
     // Atomic write: write to temp file, then rename
     let temp_path = path.with_extension("tmp");
