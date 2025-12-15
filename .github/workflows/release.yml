@@ -136,14 +136,25 @@ jobs:
             exit 1
           fi
 
+      - name: Prepare release files
+        run: |
+          cd artifacts
+          # Copy all binaries to root for upload
+          cp */vx* . 2>/dev/null || true
+          echo "=== Files ready for release ==="
+          ls -lh
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
+          draft: false
+          prerelease: false
+          make_latest: true
           files: |
-            artifacts/vx-x86_64-pc-windows-msvc.exe/vx-x86_64-pc-windows-msvc.exe
-            artifacts/vx-x86_64-unknown-linux-gnu/vx-x86_64-unknown-linux-gnu
-            artifacts/vx-x86_64-apple-darwin/vx-x86_64-apple-darwin
-            artifacts/vx-aarch64-apple-darwin/vx-aarch64-apple-darwin
+            artifacts/vx-x86_64-pc-windows-msvc.exe
+            artifacts/vx-x86_64-unknown-linux-gnu
+            artifacts/vx-x86_64-apple-darwin
+            artifacts/vx-aarch64-apple-darwin
             artifacts/checksums.txt
           body: |
             ## VaultX Release ${{ github.ref_name }}
