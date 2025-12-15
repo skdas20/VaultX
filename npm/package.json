@@ -1,6 +1,6 @@
 {
   "name": "@vaultx-official/vaultx",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A secure, modern CLI tool for managing secrets with TTL-based expiration",
   "keywords": [
     "vault",
@@ -43,7 +43,8 @@
   "files": [
     "bin",
     "scripts",
-    "binaries"
+    "binaries",
+    "rust-src"
   ],
   "preferGlobal": true,
   "devDependencies": {}

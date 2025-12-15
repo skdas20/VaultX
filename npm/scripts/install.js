@@ -211,25 +211,38 @@ function buildFromSource(targetBinaryName, platform) {
         throw new Error('Rust/Cargo is not installed');
       }
 
-      // Find project root (assuming we are in npm/scripts/ or similar)
-      // This script is in npm/scripts/install.js, so root is two dirs up
-      const projectRoot = path.resolve(__dirname, '..', '..');
-      const cargoTomlPath = path.join(projectRoot, 'Cargo.toml');
+      // 1. Try to find bundled source (for npm installed package)
+      const bundledSourceDir = path.join(__dirname, '..', 'rust-src');
+      const bundledCargoToml = path.join(bundledSourceDir, 'Cargo.toml');
+      
+      // 2. Try to find parent source (for git repo / local dev)
+      const parentSourceDir = path.resolve(__dirname, '..', '..');
+      const parentCargoToml = path.join(parentSourceDir, 'Cargo.toml');
 
-      if (!fs.existsSync(cargoTomlPath)) {
-        throw new Error(`Cargo.toml not found at ${cargoTomlPath}. Are you installing from the git repo?`);
+      let projectRoot = null;
+      let isBundled = false;
+
+      if (fs.existsSync(bundledCargoToml)) {
+        console.log('📦 Found bundled source code.');
+        projectRoot = bundledSourceDir;
+        isBundled = true;
+      } else if (fs.existsSync(parentCargoToml)) {
+        console.log('📂 Found local source code.');
+        projectRoot = parentSourceDir;
+      } else {
+        throw new Error(`Cargo.toml not found. Source code not available for fallback build.`);
       }
 
       console.log('🔨 Building release binary with Cargo...');
-      // We are building the CLI member 'vx-cli' mostly, but workspace build is fine
-      // The binary comes from vx-cli
+      
+      // Build command
+      // If bundled, we are at the workspace root equivalent
       execSync('cargo build --release -p vx-cli', { 
         cwd: projectRoot, 
         stdio: 'inherit' 
       });
 
       // Locate the built binary
-      // It should be in target/release/vx (or vx.exe)
       const builtBinaryName = platform === 'win32' ? 'vx.exe' : 'vx';
       const sourcePath = path.join(projectRoot, 'target', 'release', builtBinaryName);
 
