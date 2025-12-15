@@ -10,10 +10,23 @@ mod storage;
 use clap::{Parser, Subcommand};
 use error::CliError;
 
+const BANNER: &str = "\x1b[36m
+__      __          _ _  __   __
+\\ \\    / /         | | |\\ \\ / /
+ \\ \\  / /_ _ _   _| | |_ \\ V /
+  \\ \\/ / _` | | | | | __| > <
+   \\  / (_| | |_| | | |_ / . \\
+    \\/ \\__,_|\\__,_|_|\\__/_/ \\_\\
+\x1b[0m
+   \x1b[1mVaultX\x1b[0m - Secure Secrets Management
+   Created by \x1b[36mSumit Kumar Das\x1b[0m
+";
+
 #[derive(Parser)]
 #[command(name = "vx")]
 #[command(author, version, about = "VaultX - A zero-trust developer vault")]
 #[command(propagate_version = true)]
+#[command(before_help = BANNER)]
 struct Cli {
     #[command(subcommand)]
     command: Commands,
