@@ -19,7 +19,9 @@ export default function VaultXHero() {
     <div className="relative w-full min-h-screen bg-[#050505] overflow-hidden flex items-center justify-center font-sans selection:bg-cyan-500/30">
       
       {/* --- Aurora Background --- */}
-      <AuroraBackground />
+      <div className="absolute inset-0 z-0">
+        <AuroraBackground />
+      </div>
 
       <div className="container mx-auto px-4 grid lg:grid-cols-2 gap-12 items-center relative z-10">
         
@@ -30,68 +32,60 @@ export default function VaultXHero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="inline-block py-1 px-3 rounded-full bg-cyan-950/30 border border-cyan-500/30 text-cyan-400 text-xs font-semibold tracking-wider mb-4">
+            <span className="inline-block py-2 px-4 rounded-full bg-cyan-950/40 border border-cyan-500/40 text-cyan-300 text-xs font-semibold tracking-widest mb-6 backdrop-blur-sm hover:bg-cyan-950/60 transition-colors">
               v0.2.0 RELEASE
             </span>
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-white mb-6">
+            <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-white mb-8 leading-tight">
               Secure secrets. <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500">
                 Instantly.
               </span>
             </h1>
-            <p className="text-zinc-400 text-lg md:text-xl max-w-lg leading-relaxed">
+            <p className="text-zinc-300 text-lg md:text-xl max-w-lg leading-relaxed font-medium">
               A high-performance CLI for managing environment variables and secrets with military-grade encryption.
             </p>
           </motion.div>
 
           {/* Installation Command Bar */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
-            className="group relative flex items-center gap-3 bg-zinc-900/50 border border-zinc-800 rounded-lg p-4 max-w-md hover:border-zinc-700 transition-colors"
+            className="group relative flex items-center gap-3 bg-zinc-950/60 border border-purple-500/20 rounded-xl p-5 max-w-md hover:border-purple-500/40 transition-all duration-300 backdrop-blur-sm shadow-lg shadow-purple-500/5"
           >
-            <span className="text-purple-400 font-mono text-lg">$</span>
-            <code className="text-zinc-300 font-mono text-sm sm:text-base flex-1">
+            <span className="text-cyan-400 font-mono text-lg font-bold">$</span>
+            <code className="text-zinc-200 font-mono text-sm sm:text-base flex-1 font-medium">
               npm install -g @vaultx-official/vaultx
             </code>
-            <button 
+            <button
               onClick={handleCopy}
-              className="text-zinc-500 hover:text-white transition-colors"
+              className="text-zinc-400 hover:text-cyan-400 transition-colors p-2 hover:bg-cyan-500/10 rounded-lg"
             >
               {copied ? <Check size={18} className="text-green-400" /> : <Copy size={18} />}
             </button>
           </motion.div>
-
-          <motion.button 
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="bg-white text-black font-bold py-3 px-8 rounded-full shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_-5px_rgba(255,255,255,0.5)] transition-shadow"
-          >
-            Get Started
-          </motion.button>
         </div>
 
         {/* --- RIGHT SIDE: The 3D Animation --- */}
-        <div className="relative h-[600px] w-full flex items-center justify-center [perspective:1000px]">
+        <div className="relative h-[500px] w-full flex items-center justify-center [perspective:1000px]">
             {/* This div creates the 3D space */}
             <motion.div
-              className="relative w-[350px] md:w-[450px] aspect-[4/3]"
+              className="relative w-[380px] md:w-[520px] aspect-[4/3]"
               initial={{ rotateX: 20, rotateY: -20, rotateZ: 5, scale: 0.9 }}
-              animate={{ 
-                rotateX: [20, 25, 20], 
+              animate={{
+                rotateX: [20, 25, 20],
                 rotateY: [-20, -15, -20],
                 y: [0, -20, 0] // Floating effect for the whole container
               }}
-              transition={{ 
-                duration: 6, 
-                repeat: Infinity, 
-                ease: "easeInOut" 
+              transition={{
+                duration: 6,
+                repeat: Infinity,
+                ease: "easeInOut"
               }}
               style={{ transformStyle: "preserve-3d" }}
             >
                 {/* --- The Terminal Card --- */}
-                <div className="absolute inset-0 bg-black/80 backdrop-blur-xl border border-zinc-700 rounded-xl shadow-[0_0_50px_-10px_rgba(6,182,212,0.15)] overflow-hidden flex flex-col">
+                <div className="absolute inset-0 bg-black/80 backdrop-blur-xl border border-zinc-700 rounded-xl shadow-[0_0_80px_-10px_rgba(6,182,212,0.4),0_0_60px_-5px_rgba(59,130,246,0.3)] overflow-hidden flex flex-col">
                     {/* Terminal Header */}
                     <div className="h-10 bg-zinc-900/80 border-b border-zinc-800 flex items-center px-4 gap-2">
                         <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
