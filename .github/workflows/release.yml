@@ -139,8 +139,8 @@ jobs:
       - name: Prepare release files
         run: |
           cd artifacts
-          # Copy all binaries to root for upload
-          cp */vx* . 2>/dev/null || true
+          # Copy all binaries from subdirectories to root for upload
+          find . -type f -name "vx*" -not -name "checksums.txt" -exec cp {} . \;
           echo "=== Files ready for release ==="
           ls -lh
 
@@ -149,7 +149,6 @@ jobs:
         with:
           draft: false
           prerelease: false
-          make_latest: true
           files: |
             artifacts/vx-x86_64-pc-windows-msvc.exe
             artifacts/vx-x86_64-unknown-linux-gnu
