@@ -3,30 +3,54 @@
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import VaultXHero from "@/components/VaultXHero"
-import { Shield, Terminal, Settings, Lock } from "lucide-react"
+import { Shield, Terminal, Settings, Lock, Menu, X } from "lucide-react"
+import { useState } from "react"
 
 export default function Home() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-[#050505] text-white overflow-x-hidden font-sans selection:bg-cyan-500/30">
-      
+
       {/* Navigation */}
-      <nav className="relative z-50 container mx-auto px-6 py-6 flex justify-between items-center bg-[#050505]/80 backdrop-blur-md sticky top-0 border-b border-white/5">
-        <Link href="/" className="flex flex-col">
-          <span className="text-3xl font-black tracking-tighter text-cyan-400">
+      <nav className="relative z-50 container mx-auto px-4 md:px-6 py-4 md:py-6 flex justify-between items-center bg-[#050505]/80 backdrop-blur-md sticky top-0 border-b border-white/5">
+        <Link href="/" className="flex flex-col flex-shrink-0">
+          <span className="text-2xl md:text-3xl font-black tracking-tighter text-cyan-400">
             VAULTX
           </span>
-          <span className="text-[0.6rem] tracking-[0.2em] text-cyan-500 font-bold uppercase">
+          <span className="text-[0.5rem] md:text-[0.6rem] tracking-[0.2em] text-cyan-500 font-bold uppercase">
             Fast. Secure. Modern.
           </span>
         </Link>
-        
-        <div className="flex items-center gap-8 text-sm font-medium text-zinc-400">
+
+        {/* Desktop Menu */}
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-400">
           <Link href="#features" className="hover:text-cyan-400 transition-colors">Features</Link>
           <Link href="/install" className="hover:text-cyan-400 transition-colors">Install</Link>
           <Link href="/docs" className="hover:text-cyan-400 transition-colors">Docs</Link>
           <Link href="/about" className="hover:text-cyan-400 transition-colors">About</Link>
         </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="md:hidden text-cyan-400 hover:text-cyan-300 transition-colors"
+        >
+          {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
       </nav>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div className="md:hidden fixed top-16 left-0 right-0 bg-[#050505]/95 backdrop-blur-md border-b border-white/5 z-40 animate-in fade-in slide-in-from-top-2">
+          <div className="container mx-auto px-4 py-4 flex flex-col gap-3 text-sm font-medium text-zinc-400">
+            <Link href="#features" onClick={() => setMobileMenuOpen(false)} className="hover:text-cyan-400 transition-colors py-2">Features</Link>
+            <Link href="/install" onClick={() => setMobileMenuOpen(false)} className="hover:text-cyan-400 transition-colors py-2">Install</Link>
+            <Link href="/docs" onClick={() => setMobileMenuOpen(false)} className="hover:text-cyan-400 transition-colors py-2">Docs</Link>
+            <Link href="/about" onClick={() => setMobileMenuOpen(false)} className="hover:text-cyan-400 transition-colors py-2">About</Link>
+          </div>
+        </div>
+      )}
 
       {/* Hero Section */}
       <VaultXHero />
