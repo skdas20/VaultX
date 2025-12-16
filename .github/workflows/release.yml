@@ -143,6 +143,16 @@ jobs:
           find . -type f -name "vx*" -not -name "checksums.txt" -exec cp {} . \;
           echo "=== Files ready for release ==="
           ls -lh
+          echo ""
+          echo "=== Verifying binaries ==="
+          for binary in vx-x86_64-pc-windows-msvc.exe vx-x86_64-unknown-linux-gnu vx-x86_64-apple-darwin vx-aarch64-apple-darwin; do
+            if [ -f "$binary" ]; then
+              echo "✓ $binary exists ($(du -h $binary | cut -f1))"
+            else
+              echo "✗ $binary MISSING!"
+              exit 1
+            fi
+          done
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
