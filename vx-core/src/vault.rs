@@ -50,12 +50,24 @@ pub struct SshIdentity {
     pub created_at: u64,
 }
 
+/// An SSH server configuration stored in the vault.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SshServerConfig {
+    pub name: String,
+    pub username: String,
+    pub ip_address: String,
+    pub identity_name: String,
+    pub created_at: u64,
+}
+
 /// The main vault structure.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Vault {
     pub version: u32,
     pub projects: HashMap<String, Project>,
     pub ssh_identities: HashMap<String, SshIdentity>,
+    #[serde(default)]
+    pub ssh_servers: HashMap<String, SshServerConfig>,
 }
 
 /// Internal vault data (JSON serialized before encryption)
@@ -64,6 +76,8 @@ struct VaultData {
     version: u32,
     projects: HashMap<String, Project>,
     ssh_identities: HashMap<String, SshIdentity>,
+    #[serde(default)]
+    ssh_servers: HashMap<String, SshServerConfig>,
 }
 
 impl Vault {
@@ -73,6 +87,7 @@ impl Vault {
             version: VAULT_VERSION,
             projects: HashMap::new(),
             ssh_identities: HashMap::new(),
+            ssh_servers: HashMap::new(),
         }
     }
 
@@ -206,6 +221,43 @@ impl Vault {
         Ok((identity.public_key.clone(), private_key))
     }
 
+    /// Adds an SSH server configuration to the vault.
+    pub fn add_ssh_server(
+        &mut self,
+        name: &str,
+        username: String,
+        ip_address: String,
+        identity_name: String,
+    ) -> Result<(), VaultError> {
+        // Validate that the identity exists
+        if !self.ssh_identities.contains_key(&identity_name) {
+            return Err(VaultError::IdentityNotFound(identity_name));
+        }
+
+        let server = SshServerConfig {
+            name: name.to_string(),
+            username,
+            ip_address,
+            identity_name,
+            created_at: ttl::current_timestamp(),
+        };
+
+        self.ssh_servers.insert(name.to_string(), server);
+        Ok(())
+    }
+
+    /// Retrieves an SSH server configuration.
+    pub fn get_ssh_server(&self, name: &str) -> Result<&SshServerConfig, VaultError> {
+        self.ssh_servers
+            .get(name)
+            .ok_or_else(|| VaultError::ServerNotFound(name.to_string()))
+    }
+
+    /// Checks if an SSH server configuration exists.
+    pub fn has_ssh_server(&self, name: &str) -> bool {
+        self.ssh_servers.contains_key(name)
+    }
+
     /// Removes a project and all its secrets.
     pub fn remove_project(&mut self, name: &str) -> Result<(), VaultError> {
         if self.projects.remove(name).is_some() {
@@ -271,6 +323,7 @@ pub fn save_vault_with_salt(
         version: vault.version,
         projects: vault.projects.clone(),
         ssh_identities: vault.ssh_identities.clone(),
+        ssh_servers: vault.ssh_servers.clone(),
     };
 
     let json = serde_json::to_vec(&vault_data)
@@ -353,6 +406,7 @@ pub fn load_vault(data: &[u8], password: &[u8]) -> Result<Vault, VaultError> {
         version: vault_data.version,
         projects: vault_data.projects,
         ssh_identities: vault_data.ssh_identities,
+        ssh_servers: vault_data.ssh_servers,
     })
 }
 

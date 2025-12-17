@@ -46,6 +46,15 @@ pub enum VaultError {
     #[error("SSH identity '{0}' already exists")]
     IdentityAlreadyExists(String),
 
+    #[error("SSH server '{0}' not found")]
+    ServerNotFound(String),
+
+    #[error("SSH server '{0}' already exists")]
+    ServerAlreadyExists(String),
+
+    #[error("Invalid IP address format: '{0}'")]
+    InvalidIpAddress(String),
+
     #[error("Vault file is corrupted or has been tampered with")]
     CorruptedVault,
 

@@ -112,6 +112,9 @@ enum Commands {
         #[arg(short = 'y', long)]
         yes: bool,
     },
+
+    /// Cache vault password for current session
+    Login,
 }
 
 #[derive(Subcommand)]
@@ -122,13 +125,13 @@ enum SshCommands {
         name: String,
     },
 
-    /// Connect to a server using an SSH identity
+    /// Connect to a server using an SSH identity or configure a server
     Connect {
-        /// SSH identity name
-        identity: String,
+        /// SSH identity or server name
+        identity_or_server: String,
 
-        /// Target in user@host format
-        target: String,
+        /// Target in user@host format (optional if server configured)
+        target: Option<String>,
 
         /// Additional SSH arguments
         #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
@@ -162,13 +165,14 @@ fn run() -> Result<(), CliError> {
         Commands::Ssh { command } => match command {
             SshCommands::Init { name } => commands::ssh::init(&name),
             SshCommands::Connect {
-                identity,
+                identity_or_server,
                 target,
                 args,
-            } => commands::ssh::connect(&identity, &target, &args),
+            } => commands::ssh::connect_dispatch(&identity_or_server, target.as_deref(), &args),
         },
         Commands::Remove { project, key } => commands::remove::execute(&project, key.as_deref()),
         Commands::Edit { project, key } => commands::edit::execute(&project, &key),
         Commands::Update { yes } => commands::update::execute(yes),
+        Commands::Login => commands::login::execute(),
     }
 }

@@ -2,11 +2,12 @@
 
 pub mod add;
 pub mod audit;
+pub mod edit;
 pub mod get;
 pub mod init;
-pub mod list_secrets;
 pub mod list;
-pub mod ssh;
+pub mod list_secrets;
+pub mod login;
 pub mod remove;
-pub mod edit;
+pub mod ssh;
 pub mod update;
