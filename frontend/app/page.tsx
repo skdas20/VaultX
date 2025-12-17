@@ -9,8 +9,50 @@ import { useState } from "react"
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "VaultX",
+    "applicationCategory": "DeveloperApplication",
+    "operatingSystem": "Windows, macOS, Linux",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "description": "Free SSH client, SSH identity manager, and secure developer vault with military-grade AES-256-GCM encryption. Manage secrets, multiple shells, and easy SCP transfers.",
+    "softwareVersion": "0.3.4",
+    "author": {
+      "@type": "Person",
+      "name": "Sumit Kumar Das",
+      "url": "https://www.linkedin.com/in/sumitkumardas-ai"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "VaultX"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "5",
+      "ratingCount": "1"
+    },
+    "featureList": [
+      "Military-grade AES-256-GCM encryption",
+      "SSH client and identity manager",
+      "Multiple shell manager",
+      "Easy SCP file transfer",
+      "Cross-platform support",
+      "Zero-trust security",
+      "CLI developer tool"
+    ]
+  };
+
   return (
     <div className="min-h-screen bg-[#050505] text-white overflow-x-hidden font-sans selection:bg-cyan-500/30">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
 
       {/* Navigation */}
       <nav className="relative z-50 container mx-auto px-4 md:px-6 py-4 md:py-6 flex justify-between items-center bg-[#050505]/80 backdrop-blur-md sticky top-0 border-b border-white/5">
