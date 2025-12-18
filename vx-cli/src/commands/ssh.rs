@@ -124,7 +124,7 @@ fn setup_server(servername: &str) -> Result<(), CliError> {
     println!("  Username: {}", username);
     println!("  IP: {}", ip_address);
     println!("  Identity: {}", servername);
-    println!("\nConnect with: vx ssh {}", servername);
+    println!("\nConnect with: vx ssh connect {}", servername);
 
     Ok(())
 }
@@ -228,8 +228,11 @@ fn execute_ssh_connection(
     };
     println!("{}", message);
 
-    // Execute SSH
+    // Execute SSH with inherited stdio for interactive shell and command output
     let status = cmd
+        .stdin(std::process::Stdio::inherit())
+        .stdout(std::process::Stdio::inherit())
+        .stderr(std::process::Stdio::inherit())
         .status()
         .map_err(|e| CliError::SshError(format!("Failed to execute ssh: {}", e)))?;
 

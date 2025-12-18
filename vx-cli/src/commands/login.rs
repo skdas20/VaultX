@@ -129,12 +129,17 @@ fn password_cache_path() -> Result<std::path::PathBuf, CliError> {
 /// Derives a session-specific encryption key.
 /// This key is unique to the current process and cannot be reused by other processes.
 fn derive_session_key() -> Result<[u8; KEY_SIZE], CliError> {
-    // Use process ID + environment as salt
+    // Use process ID as deterministic salt
     let pid = std::process::id();
     let salt_input = format!("vaultx_session_{}_key", pid);
 
-    // Derive key from session-specific data
-    let salt = vx_core::crypto::generate_salt();
+    // Create deterministic salt from PID so it's the same for this process
+    let mut salt = [0u8; 16];
+    let pid_bytes = pid.to_le_bytes();
+    for i in 0..16 {
+        salt[i] = pid_bytes[i % pid_bytes.len()].wrapping_add(i as u8);
+    }
+
     crypto::derive_key(salt_input.as_bytes(), &salt)
         .map_err(CliError::Crypto)
 }
