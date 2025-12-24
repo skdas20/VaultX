@@ -2,6 +2,7 @@
 
 use crate::error::CliError;
 use crate::input;
+use crate::session;
 use crate::storage;
 use std::fs;
 use std::io::Write;
@@ -11,15 +12,28 @@ use vx_core::ssh;
 /// Executes the ssh init command.
 pub fn init(name: &str) -> Result<(), CliError> {
     // Load or create vault
-    let (mut vault, encryption_key, password) = if storage::vault_exists()? {
-        let (vault, key) = storage::load_vault_with_key_auto()?;
-        let password = get_password_for_save()?;
-        (vault, key, password)
+    let (mut vault, encryption_key, password_bytes) = if storage::vault_exists()? {
+        // Load existing vault with cache check
+        if let Some(cached) = session::get_cached_password()? {
+            match storage::load_vault_with_key(&cached) {
+                Ok((v, k)) => (v, k, cached),
+                Err(_) => {
+                    let _ = session::clear_cached_password();
+                    let p = input::read_password("Enter master password: ")?;
+                    let (v, k) = storage::load_vault_with_key(p.as_bytes())?;
+                    (v, k, p.into_bytes())
+                }
+            }
+        } else {
+             let p = input::read_password("Enter master password: ")?;
+             let (v, k) = storage::load_vault_with_key(p.as_bytes())?;
+             (v, k, p.into_bytes())
+        }
     } else {
         println!("Creating new vault...");
         let password = input::read_new_password()?;
         let (vault, key) = storage::create_vault(password.as_bytes())?;
-        (vault, key, password)
+        (vault, key, password.into_bytes())
     };
 
     // Generate keypair
@@ -31,7 +45,7 @@ pub fn init(name: &str) -> Result<(), CliError> {
     vault.add_ssh_identity(name, public_key.clone(), &private_key, &encryption_key)?;
 
     // Save vault
-    storage::save_vault(&vault, password.as_bytes())?;
+    storage::save_vault(&vault, &password_bytes)?;
 
     // Display public key and setup commands
     println!("\n✓ SSH identity '{}' created successfully.\n", name);
@@ -71,8 +85,21 @@ fn setup_server(servername: &str) -> Result<(), CliError> {
     println!("Setting up SSH server configuration: {}", servername);
 
     // Load vault
-    let (mut vault, _encryption_key) = storage::load_vault_with_key_auto()?;
-    let password = get_password_for_save()?;
+    let (mut vault, _encryption_key, password_bytes) = if let Some(cached) = session::get_cached_password()? {
+        match storage::load_vault_with_key(&cached) {
+            Ok((v, k)) => (v, k, cached),
+            Err(_) => {
+                let _ = session::clear_cached_password();
+                let p = input::read_password("Enter master password: ")?;
+                let (v, k) = storage::load_vault_with_key(p.as_bytes())?;
+                (v, k, p.into_bytes())
+            }
+        }
+    } else {
+         let p = input::read_password("Enter master password: ")?;
+         let (v, k) = storage::load_vault_with_key(p.as_bytes())?;
+         (v, k, p.into_bytes())
+    };
 
     // Check if server already exists
     if vault.has_ssh_server(servername) {
@@ -115,7 +142,7 @@ fn setup_server(servername: &str) -> Result<(), CliError> {
         servername.to_string(), // Identity has same name as server
     )?;
 
-    storage::save_vault(&vault, password.as_bytes())?;
+    storage::save_vault(&vault, &password_bytes)?;
 
     println!(
         "\n✓ Server '{}' configured successfully!",
@@ -142,7 +169,7 @@ fn connect_server(
         .map_err(|_| CliError::SshError(format!("Server '{}' not found", servername)))?;
 
     // Get SSH identity
-    let (_public_key, private_key_bytes) =
+    let (_public_key, private_key_bytes) = 
         vault.get_ssh_identity(&server.identity_name, encryption_key)?;
 
     // Build target string
@@ -266,24 +293,4 @@ fn validate_ip_or_hostname(addr: &str) -> Result<(), CliError> {
     }
 
     Ok(())
-}
-
-/// Gets password for vault save operation (from cache or prompt).
-fn get_password_for_save() -> Result<String, CliError> {
-    use crate::commands::login;
-
-    // Try to use cached password
-    if let Some(cached) = login::get_cached_password()? {
-        // Verify it's still valid by trying to save a test vault
-        match String::from_utf8(cached) {
-            Ok(pwd) => return Ok(pwd),
-            Err(_) => {
-                // Clear invalid cache
-                let _ = login::clear_cached_password();
-            }
-        }
-    }
-
-    // Fall back to prompting
-    input::read_password("Enter master password: ")
 }

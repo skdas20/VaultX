@@ -104,15 +104,15 @@ pub fn load_vault_with_key(password: &[u8]) -> Result<(Vault, [u8; KEY_SIZE]), C
 
 /// Loads vault using cached password if available, otherwise prompts.
 pub fn load_vault_auto() -> Result<Vault, CliError> {
-    use crate::commands::login;
+    use crate::session;
 
     // Try cached password first
-    if let Some(cached_password) = login::get_cached_password()? {
+    if let Some(cached_password) = session::get_cached_password()? {
         match load_vault(&cached_password) {
             Ok(vault) => return Ok(vault),
             Err(_) => {
                 // Cache is stale, clear it
-                let _ = login::clear_cached_password();
+                let _ = session::clear_cached_password();
             }
         }
     }
@@ -124,15 +124,15 @@ pub fn load_vault_auto() -> Result<Vault, CliError> {
 
 /// Loads vault with key using cached password if available.
 pub fn load_vault_with_key_auto() -> Result<(Vault, [u8; KEY_SIZE]), CliError> {
-    use crate::commands::login;
+    use crate::session;
 
     // Try cached password first
-    if let Some(cached_password) = login::get_cached_password()? {
+    if let Some(cached_password) = session::get_cached_password()? {
         match load_vault_with_key(&cached_password) {
             Ok(result) => return Ok(result),
             Err(_) => {
                 // Cache is stale, clear it
-                let _ = login::clear_cached_password();
+                let _ = session::clear_cached_password();
             }
         }
     }

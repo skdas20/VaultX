@@ -1,11 +1,25 @@
 use crate::error::CliError;
 use crate::input;
+use crate::session;
 use crate::storage;
 
 pub fn execute(project: &str, key: Option<&str>) -> Result<(), CliError> {
     // Load vault with encryption key
-    let password = input::read_password("Enter master password: ")?;
-    let (mut vault, _) = storage::load_vault_with_key(password.as_bytes())?;
+    let (mut vault, password_bytes) = if let Some(cached) = session::get_cached_password()? {
+        match storage::load_vault_with_key(&cached) {
+            Ok((v, _)) => (v, cached),
+            Err(_) => {
+                let _ = session::clear_cached_password();
+                let p = input::read_password("Enter master password: ")?;
+                let (v, _) = storage::load_vault_with_key(p.as_bytes())?;
+                (v, p.into_bytes())
+            }
+        }
+    } else {
+         let p = input::read_password("Enter master password: ")?;
+         let (v, _) = storage::load_vault_with_key(p.as_bytes())?;
+         (v, p.into_bytes())
+    };
 
     if let Some(k) = key {
         // Remove secret
@@ -26,7 +40,7 @@ pub fn execute(project: &str, key: Option<&str>) -> Result<(), CliError> {
     }
 
     // Save vault
-    storage::save_vault(&vault, password.as_bytes())?;
+    storage::save_vault(&vault, &password_bytes)?;
 
     Ok(())
 }

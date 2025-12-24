@@ -1,7 +1,7 @@
 //! Audit the vault for security issues.
 
 use crate::error::CliError;
-use crate::input;
+
 use crate::storage;
 use vx_core::ttl::current_timestamp;
 use vx_core::ttl::is_expired;
@@ -28,8 +28,7 @@ const HIGH_RISK_PATTERNS: &[&str] = &[
 /// Executes the audit command.
 pub fn execute() -> Result<(), CliError> {
     // Load vault
-    let password = input::read_password("Enter master password: ")?;
-    let (vault, _key) = storage::load_vault_with_key(password.as_bytes())?;
+    let (vault, _key) = storage::load_vault_with_key_auto()?;
 
     let now = current_timestamp();
     let long_lived_threshold = now.saturating_sub(LONG_LIVED_DAYS * SECONDS_PER_DAY);

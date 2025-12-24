@@ -1,7 +1,7 @@
 //! Get a secret from a project.
 
 use crate::error::CliError;
-use crate::input;
+
 use crate::storage;
 use vx_core::ttl;
 
@@ -10,8 +10,7 @@ use vx_core::ttl;
 /// If key is not provided, shows all secrets in the project.
 pub fn execute(project: &str, key: Option<&str>) -> Result<(), CliError> {
     // Load vault with encryption key
-    let password = input::read_password("Enter master password: ")?;
-    let (vault, encryption_key) = storage::load_vault_with_key(password.as_bytes())?;
+    let (vault, encryption_key) = storage::load_vault_with_key_auto()?;
 
     // Get project
     let proj = vault

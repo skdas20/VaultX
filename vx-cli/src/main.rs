@@ -5,6 +5,7 @@
 mod commands;
 mod error;
 mod input;
+mod session;
 mod storage;
 
 use clap::{Parser, Subcommand};

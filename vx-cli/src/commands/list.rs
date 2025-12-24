@@ -1,7 +1,7 @@
 //! List all projects in the vault.
 
 use crate::error::CliError;
-use crate::input;
+
 use crate::storage;
 
 /// Executes the list command.
@@ -13,8 +13,7 @@ pub fn execute() -> Result<(), CliError> {
     }
 
     // Load vault
-    let password = input::read_password("Enter master password: ")?;
-    let (vault, _key) = storage::load_vault_with_key(password.as_bytes())?;
+    let (vault, _key) = storage::load_vault_with_key_auto()?;
 
     if vault.projects.is_empty() {
         println!("No projects in vault.");

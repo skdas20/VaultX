@@ -2,6 +2,7 @@
 
 use crate::error::CliError;
 use crate::input;
+use crate::session;
 use crate::storage;
 use vx_core::{ttl, Vault, KEY_SIZE};
 
@@ -14,8 +15,21 @@ pub fn execute(
     ttl_str: Option<String>,
 ) -> Result<(), CliError> {
     // Load vault with encryption key
-    let password = input::read_password("Enter master password: ")?;
-    let (mut vault, encryption_key) = storage::load_vault_with_key(password.as_bytes())?;
+    let (mut vault, encryption_key, password_bytes) = if let Some(cached) = session::get_cached_password()? {
+        match storage::load_vault_with_key(&cached) {
+            Ok((v, k)) => (v, k, cached),
+            Err(_) => {
+                let _ = session::clear_cached_password();
+                let p = input::read_password("Enter master password: ")?;
+                let (v, k) = storage::load_vault_with_key(p.as_bytes())?;
+                (v, k, p.into_bytes())
+            }
+        }
+    } else {
+         let p = input::read_password("Enter master password: ")?;
+         let (v, k) = storage::load_vault_with_key(p.as_bytes())?;
+         (v, k, p.into_bytes())
+    };
 
     // Parse TTL if provided
     let ttl_seconds = if let Some(ttl) = ttl_str {
@@ -61,7 +75,7 @@ pub fn execute(
     }
 
     // Save vault
-    storage::save_vault(&vault, password.as_bytes())?;
+    storage::save_vault(&vault, &password_bytes)?;
 
     Ok(())
 }

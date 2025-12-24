@@ -1,15 +1,14 @@
 //! List all secrets in a project.
 
 use crate::error::CliError;
-use crate::input;
+
 use crate::storage;
 use vx_core::ttl;
 
 /// Executes the list-secrets command.
 pub fn execute(project: &str) -> Result<(), CliError> {
-    // Load vault
-    let password = input::read_password("Enter master password: ")?;
-    let (vault, encryption_key) = storage::load_vault_with_key(password.as_bytes())?;
+    // Load vault with encryption key
+    let (vault, _encryption_key) = storage::load_vault_with_key_auto()?;
 
     // Get project
     let proj = vault
