@@ -9,5 +9,6 @@ pub mod list;
 pub mod list_secrets;
 pub mod login;
 pub mod remove;
+pub mod scp;
 pub mod ssh;
 pub mod update;

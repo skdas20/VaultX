@@ -11,17 +11,17 @@ mod storage;
 use clap::{Parser, Subcommand};
 use error::CliError;
 
-const BANNER: &str = "\x1b[36m
+const BANNER: &str = r#"
 __      __          _ _  __   __
-\\ \\    / /         | | |\\ \\ / /
- \\ \\  / /_ _ _   _| | |_ \\ V /
-  \\ \\/ / _` | | | | | __| > <
-   \\  / (_| | |_| | | |_ / . \\
-    \\/ \\__,_|\\__,_|_|\\__/_/ \\_\\
-\x1b[0m
-   \x1b[1mVaultX\x1b[0m - Secure Secrets Management
-   Created by \x1b[36mSumit Kumar Das\x1b[0m
-";
+\ \    / /         | | |\ \ / /
+ \ \  / /_ _ _   _| | |_ \ V /
+  \ \/ / _` | | | | | __| > <
+   \  / (_| | |_| | | |_ / . \
+    \/ \__,_|\__,_|_|\__/_/ \_\
+
+   VaultX - Secure Secrets Management
+   Created by Sumit Kumar Das
+"#;
 
 #[derive(Parser)]
 #[command(name = "vx")]
@@ -84,9 +84,33 @@ enum Commands {
     Audit,
 
     /// SSH identity management
+    ///
+    /// Usage:
+    ///   vx ssh init <name>           - Initialize new SSH identity
+    ///   vx ssh <server>              - Connect to configured server
+    ///   vx ssh <identity> <user@host> - Connect using identity
     Ssh {
-        #[command(subcommand)]
-        command: SshCommands,
+        /// Subcommand (init, connect) or server/identity name
+        #[arg(allow_hyphen_values = true)]
+        target: Option<String>,
+
+        /// Arguments for the command
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
+    },
+
+    /// Secure copy to/from server
+    ///
+    /// Usage:
+    ///   vx scp <server> <source> <dest>
+    ///   Use ':' prefix to indicate remote path (e.g., :file.txt or :/tmp/file)
+    Scp {
+        /// Server name
+        server: String,
+
+        /// SCP arguments (use ':' prefix for remote paths)
+        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+        args: Vec<String>,
     },
 
     /// Remove a secret or project from the vault
@@ -118,28 +142,6 @@ enum Commands {
     Login,
 }
 
-#[derive(Subcommand)]
-enum SshCommands {
-    /// Initialize a new SSH identity
-    Init {
-        /// Name for the SSH identity
-        name: String,
-    },
-
-    /// Connect to a server using an SSH identity or configure a server
-    Connect {
-        /// SSH identity or server name
-        identity_or_server: String,
-
-        /// Target in user@host format (optional if server configured)
-        target: Option<String>,
-
-        /// Additional SSH arguments
-        #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
-        args: Vec<String>,
-    },
-}
-
 fn main() {
     if let Err(e) = run() {
         eprintln!("Error: {}", e);
@@ -163,14 +165,8 @@ fn run() -> Result<(), CliError> {
         Commands::List => commands::list::execute(),
         Commands::Secrets { project } => commands::list_secrets::execute(&project),
         Commands::Audit => commands::audit::execute(),
-        Commands::Ssh { command } => match command {
-            SshCommands::Init { name } => commands::ssh::init(&name),
-            SshCommands::Connect {
-                identity_or_server,
-                target,
-                args,
-            } => commands::ssh::connect_dispatch(&identity_or_server, target.as_deref(), &args),
-        },
+        Commands::Ssh { target, args } => commands::ssh::execute(target, args),
+        Commands::Scp { server, args } => commands::scp::execute(&server, &args),
         Commands::Remove { project, key } => commands::remove::execute(&project, key.as_deref()),
         Commands::Edit { project, key } => commands::edit::execute(&project, &key),
         Commands::Update { yes } => commands::update::execute(yes),

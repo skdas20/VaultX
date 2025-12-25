@@ -9,6 +9,86 @@ use std::io::Write;
 use std::process::Command;
 use vx_core::ssh;
 
+/// Entry point for SSH command dispatch.
+/// Handles `vx ssh init`, `vx ssh connect`, and `vx ssh <server>`.
+pub fn execute(target: Option<String>, args: Vec<String>) -> Result<(), CliError> {
+    match target.as_deref() {
+        Some("init") => {
+            if args.is_empty() {
+                return Err(CliError::Generic("Usage: vx ssh init <name>".to_string()));
+            }
+            init(&args[0])
+        }
+        Some("connect") => {
+            if args.is_empty() {
+                 return Err(CliError::Generic("Usage: vx ssh connect <identity_or_server> [target] [args...]".to_string()));
+            }
+            let identity_or_server = &args[0];
+            let target = args.get(1).map(|s| s.as_str());
+            let extra_args = if args.len() > 2 {
+                args[2..].to_vec()
+            } else {
+                Vec::new()
+            };
+            connect_dispatch(identity_or_server, target, &extra_args)
+        }
+        Some(other) => {
+            // Treat as server name or identity
+            // Check if it looks like an identity+target or just server
+            // Since we flattened args, `other` is the first arg.
+            // If `other` is a server name, we connect to it.
+            // If `other` is identity, we expect next arg to be user@host.
+            
+            // We use connect_dispatch logic but need to be careful with args
+            // args here are the *rest* of the arguments.
+            
+            // Case 1: vx ssh <server> [cmd...]
+            // Case 2: vx ssh <identity> <user@host> [cmd...]
+            
+            // To distinguish, we load vault and check if `other` is a server.
+            // But loading vault is expensive? Not really.
+            
+            // However, `connect_dispatch` already does the check!
+            // But `connect_dispatch` signature expects separate args.
+            
+            // If `other` is server: target is None, extra_args are `args`.
+            // If `other` is identity: target is `args[0]`, extra_args are `args[1..]`.
+            
+            // Let's modify logic to try server first.
+            
+            // Load vault to check if it's a server
+             let (vault, _) = storage::load_vault_with_key_auto()?;
+             
+             if vault.has_ssh_server(other) {
+                 // It's a server
+                 let extra_args = args; // all remaining args are for the command
+                 // We call the internal connect logic directly to avoid re-loading vault?
+                 // Or just delegate.
+                 // Since we already loaded vault, we should pass it or re-load.
+                 // storage::load_vault... handles caching so re-load is cheap.
+                 connect_dispatch(other, None, &extra_args)
+             } else {
+                 // Not a server, assume identity
+                 if args.is_empty() {
+                      // If it's not a server and no target provided, maybe they meant to connect to a server that doesn't exist?
+                      // or they provided identity but forgot target.
+                      // Let's assume they meant a server and let connect_dispatch fail with "Server not found" or try setup.
+                      connect_dispatch(other, None, &args)
+                 } else {
+                     let tgt = &args[0];
+                     let extra_args = args[1..].to_vec();
+                     connect_dispatch(other, Some(tgt), &extra_args)
+                 }
+             }
+        }
+        None => {
+            // No arguments provided
+            Err(CliError::Generic("Usage: vx ssh <server> or vx ssh init <name>".to_string()))
+        }
+    }
+}
+
+
 /// Executes the ssh init command.
 pub fn init(name: &str) -> Result<(), CliError> {
     // Load or create vault
@@ -151,7 +231,7 @@ fn setup_server(servername: &str) -> Result<(), CliError> {
     println!("  Username: {}", username);
     println!("  IP: {}", ip_address);
     println!("  Identity: {}", servername);
-    println!("\nConnect with: vx ssh connect {}", servername);
+    println!("\nConnect with: vx ssh {}", servername);
 
     Ok(())
 }
