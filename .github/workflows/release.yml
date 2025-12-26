@@ -139,9 +139,17 @@ jobs:
       - name: Prepare release files
         run: |
           cd artifacts
-          # Move all binaries from subdirectories to root for upload
-          # artifacts/vx-name/vx-name -> artifacts/vx-name
-          find . -mindepth 2 -type f -name "vx*" -exec mv {} . \;
+          # Extract binaries from artifact subdirectories
+          # upload-artifact@v4 creates: artifacts/vx-name/vx-name
+          echo "=== Extracting binaries from subdirectories ==="
+          for dir in vx-*/; do
+            echo "Processing $dir"
+            # Move all files from subdir to root
+            find "$dir" -type f -exec mv -v {} . \;
+          done
+          # Remove empty directories
+          rm -rf vx-*/
+          echo ""
           echo "=== Files ready for release ==="
           ls -lh
           echo ""
