@@ -5,33 +5,24 @@ use std::fs;
 use std::io::Write;
 use vx_core::crypto::{self, KEY_SIZE};
 
-/// Gets the session identifier (Parent PID on Linux, PID elsewhere).
-#[cfg(target_os = "linux")]
+/// Gets the session identifier (Parent PID for terminal session persistence).
 fn get_session_id() -> u32 {
-    // On Linux, the parent process ID (shell) identifies the session
-    if let Ok(stat) = std::fs::read_to_string("/proc/self/stat") {
-        // Field 4 is PPID (1-based index 3)
-        // Format: pid (comm) state ppid ...
-        // We need to handle the fact that (comm) can contain spaces and parentheses
-        // So simply splitting by whitespace might be dangerous if comm has spaces.
-        // However, usually shell names don't have spaces.
-        // A safer way is to find the last ')' and parse from there.
-        
-        if let Some(end_of_comm) = stat.rfind(')') {
-            let after_comm = &stat[end_of_comm + 1..];
-            if let Some(ppid_str) = after_comm.split_whitespace().nth(1) { // 0 is state, 1 is ppid
-                 if let Ok(ppid) = ppid_str.parse::<u32>() {
-                    return ppid;
-                }
-            }
+    use sysinfo::{System, Pid};
+
+    let current_pid = std::process::id();
+
+    // Try to get parent PID using sysinfo (works on all platforms)
+    let mut sys = System::new();
+    sys.refresh_processes();
+
+    if let Some(process) = sys.process(Pid::from_u32(current_pid)) {
+        if let Some(parent_pid) = process.parent() {
+            return parent_pid.as_u32();
         }
     }
-    std::process::id()
-}
 
-#[cfg(not(target_os = "linux"))]
-fn get_session_id() -> u32 {
-    std::process::id()
+    // Fallback to current PID if parent cannot be determined
+    current_pid
 }
 
 /// Returns the path to the password cache file.
