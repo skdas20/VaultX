@@ -33,7 +33,7 @@ export default function VaultXHero() {
             transition={{ duration: 0.5 }}
           >
             <span className="inline-block py-2 px-4 rounded-full bg-cyan-950/40 border border-cyan-500/40 text-cyan-300 text-xs font-semibold tracking-widest mb-4 md:mb-6 backdrop-blur-sm hover:bg-cyan-950/60 transition-colors">
-              v0.3.4-final RELEASE
+              v0.3.6 RELEASE
             </span>
             <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-black tracking-tighter text-white mb-4 md:mb-8 leading-tight">
               Secure secrets. <br />
