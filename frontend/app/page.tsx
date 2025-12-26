@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import VaultXHero from "@/components/VaultXHero"
-import { Shield, Terminal, Settings, Lock, Menu, X } from "lucide-react"
+import { Shield, Terminal, Settings, Lock, Menu, X, Server } from "lucide-react"
 import { useState } from "react"
 
 export default function Home() {
@@ -21,7 +21,7 @@ export default function Home() {
       "priceCurrency": "USD"
     },
     "description": "Free SSH client, SSH identity manager, and secure developer vault with military-grade AES-256-GCM encryption. Manage secrets, multiple shells, and easy SCP transfers.",
-    "softwareVersion": "0.3.4",
+    "softwareVersion": "0.3.7",
     "author": {
       "@type": "Person",
       "name": "Sumit Kumar Das",
@@ -109,25 +109,25 @@ export default function Home() {
         </div>
         
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <FeatureBox 
-            icon={<Shield className="w-8 h-8 text-cyan-400" />} 
-            title="Military-Grade" 
-            desc="AES-256-GCM encryption ensures your secrets are uncrackable." 
+          <FeatureBox
+            icon={<Shield className="w-8 h-8 text-cyan-400" />}
+            title="Military-Grade"
+            desc="AES-256-GCM encryption ensures your secrets are uncrackable."
           />
-          <FeatureBox 
-            icon={<Settings className="w-8 h-8 text-purple-500" />} 
-            title="Cross-Platform" 
-            desc="Works seamlessly on Linux, macOS, and Windows." 
+          <FeatureBox
+            icon={<Server className="w-8 h-8 text-purple-500" />}
+            title="SSH Manager"
+            desc="Built-in SSH client with identity management and seamless SCP transfers."
           />
-          <FeatureBox 
-            icon={<Terminal className="w-8 h-8 text-green-400" />} 
-            title="Developer First" 
-            desc="Intuitive CLI designed for rapid development workflows." 
+          <FeatureBox
+            icon={<Terminal className="w-8 h-8 text-green-400" />}
+            title="Developer First"
+            desc="Intuitive CLI designed for rapid development workflows."
           />
-          <FeatureBox 
-            icon={<Lock className="w-8 h-8 text-yellow-400" />} 
-            title="Zero Trust" 
-            desc="Your keys never leave your machine. You are in control." 
+          <FeatureBox
+            icon={<Lock className="w-8 h-8 text-yellow-400" />}
+            title="Cross-Platform"
+            desc="Works seamlessly on Linux, macOS, and Windows with session caching."
           />
         </div>
       </section>
