@@ -139,8 +139,9 @@ jobs:
       - name: Prepare release files
         run: |
           cd artifacts
-          # Copy all binaries from subdirectories to root for upload
-          find . -type f -name "vx*" -not -name "checksums.txt" -exec cp {} . \;
+          # Move all binaries from subdirectories to root for upload
+          # artifacts/vx-name/vx-name -> artifacts/vx-name
+          find . -mindepth 2 -type f -name "vx*" -exec mv {} . \;
           echo "=== Files ready for release ==="
           ls -lh
           echo ""
