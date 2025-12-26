@@ -142,13 +142,17 @@ jobs:
           # Extract binaries from artifact subdirectories
           # upload-artifact@v4 creates: artifacts/vx-name/vx-name
           echo "=== Extracting binaries from subdirectories ==="
+          # Use temp directory to avoid name conflicts
+          mkdir -p temp_binaries
           for dir in vx-*/; do
             echo "Processing $dir"
-            # Move all files from subdir to root
-            find "$dir" -type f -exec mv -v {} . \;
+            find "$dir" -type f -exec mv -v {} temp_binaries/ \;
           done
-          # Remove empty directories
+          # Remove artifact directories
           rm -rf vx-*/
+          # Move binaries to root
+          mv temp_binaries/* .
+          rmdir temp_binaries
           echo ""
           echo "=== Files ready for release ==="
           ls -lh
