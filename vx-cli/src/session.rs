@@ -5,24 +5,48 @@ use std::fs;
 use std::io::Write;
 use vx_core::crypto::{self, KEY_SIZE};
 
-/// Gets the session identifier (Parent PID for terminal session persistence).
+/// Gets the session identifier for password caching.
+///
+/// On Windows: Uses a daily cache (user + date) since parent PID is unreliable with npm wrappers
+/// On Unix: Uses parent PID for true session persistence
 fn get_session_id() -> u32 {
-    use sysinfo::{System, Pid};
+    #[cfg(target_os = "windows")]
+    {
+        // On Windows, use daily cache (more reliable with npm/cmd wrappers)
+        use std::time::{SystemTime, UNIX_EPOCH};
+        let days_since_epoch = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs() / 86400; // Seconds per day
 
-    let current_pid = std::process::id();
-
-    // Try to get parent PID using sysinfo (works on all platforms)
-    let mut sys = System::new();
-    sys.refresh_processes();
-
-    if let Some(process) = sys.process(Pid::from_u32(current_pid)) {
-        if let Some(parent_pid) = process.parent() {
-            return parent_pid.as_u32();
+        // Combine username hash + day for daily session
+        let username = std::env::var("USERNAME").unwrap_or_else(|_| "user".to_string());
+        let mut hash = 0u32;
+        for byte in username.bytes() {
+            hash = hash.wrapping_mul(31).wrapping_add(byte as u32);
         }
+        hash.wrapping_add(days_since_epoch as u32)
     }
 
-    // Fallback to current PID if parent cannot be determined
-    current_pid
+    #[cfg(not(target_os = "windows"))]
+    {
+        use sysinfo::{System, Pid};
+
+        let current_pid = std::process::id();
+
+        // On Unix, use parent PID for session persistence
+        let mut sys = System::new();
+        sys.refresh_processes();
+
+        if let Some(process) = sys.process(Pid::from_u32(current_pid)) {
+            if let Some(parent_pid) = process.parent() {
+                return parent_pid.as_u32();
+            }
+        }
+
+        // Fallback to current PID
+        current_pid
+    }
 }
 
 /// Returns the path to the password cache file.
