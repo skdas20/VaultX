@@ -35,21 +35,27 @@ pub fn execute() -> Result<(), CliError> {
         println!();
     }
 
-    // Show SSH identities
-    if has_ssh {
-        println!("SSH Identities:");
-        for name in vault.ssh_identities.keys() {
-            println!("  • {}", name);
+    // Show SSH servers (includes identities since they're 1:1 mapped)
+    if has_servers {
+        println!("SSH Servers:");
+        for (name, server) in &vault.ssh_servers {
+            println!("  • {} → {}@{}",
+                name, server.username, server.ip_address);
         }
         println!();
     }
 
-    // Show SSH servers
-    if has_servers {
-        println!("SSH Servers:");
-        for (name, server) in &vault.ssh_servers {
-            println!("  • {} → {}@{} (using identity: {})",
-                name, server.username, server.ip_address, server.identity_name);
+    // Show standalone SSH identities (not linked to servers)
+    if has_ssh {
+        let standalone_identities: Vec<_> = vault.ssh_identities.keys()
+            .filter(|name| !vault.ssh_servers.contains_key(*name))
+            .collect();
+
+        if !standalone_identities.is_empty() {
+            println!("SSH Identities (not yet configured as servers):");
+            for name in standalone_identities {
+                println!("  • {} (run: vx ssh connect {})", name, name);
+            }
         }
     }
 
