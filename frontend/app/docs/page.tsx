@@ -115,14 +115,40 @@ export default function DocsPage() {
             </Section>
 
             <Section title="5. SSH Setup (Optional)">
-              <p className="text-zinc-400 mb-4">For SSH key management:</p>
-              <div className="space-y-2">
-                <CodeBlock 
-                  code="vx ssh init my-server"
-                  onCopy={() => handleCopy("vx ssh init my-server", "win-ssh1")}
-                  copied={copied === "win-ssh1"}
-                />
-                <p className="text-zinc-400 text-sm">Copy the public key to your server's <code className="text-cyan-400">~/.ssh/authorized_keys</code></p>
+              <p className="text-zinc-400 mb-4">VaultX includes a complete SSH client with identity management:</p>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-zinc-300 text-sm mb-1">Generate SSH identity:</p>
+                  <CodeBlock
+                    code="vx ssh init my-server"
+                    onCopy={() => handleCopy("vx ssh init my-server", "win-ssh1")}
+                    copied={copied === "win-ssh1"}
+                  />
+                </div>
+                <div>
+                  <p className="text-zinc-300 text-sm mb-1">Configure server connection:</p>
+                  <CodeBlock
+                    code="vx ssh add my-server user@192.168.1.100"
+                    onCopy={() => handleCopy("vx ssh add my-server user@192.168.1.100", "win-ssh2")}
+                    copied={copied === "win-ssh2"}
+                  />
+                </div>
+                <div>
+                  <p className="text-zinc-300 text-sm mb-1">Connect to server:</p>
+                  <CodeBlock
+                    code="vx ssh connect my-server"
+                    onCopy={() => handleCopy("vx ssh connect my-server", "win-ssh3")}
+                    copied={copied === "win-ssh3"}
+                  />
+                </div>
+                <div>
+                  <p className="text-zinc-300 text-sm mb-1">Transfer files with SCP:</p>
+                  <CodeBlock
+                    code="vx scp my-server local.txt remote:/path/to/file.txt"
+                    onCopy={() => handleCopy("vx scp my-server local.txt remote:/path/to/file.txt", "win-ssh4")}
+                    copied={copied === "win-ssh4"}
+                  />
+                </div>
               </div>
             </Section>
           </div>
@@ -167,37 +193,49 @@ sudo apt-get install -y nodejs"
             </Section>
 
             <Section title="5. SSH Setup">
-              <p className="text-zinc-400 mb-4">Generate and use SSH keys:</p>
-              <div className="space-y-2">
-                <CodeBlock 
-                  code="vx ssh init my-server"
-                  onCopy={() => handleCopy("vx ssh init my-server", "linux-ssh1")}
-                  copied={copied === "linux-ssh1"}
-                />
-                <p className="text-zinc-400 text-sm mb-2">Copy public key to server:</p>
-                <CodeBlock 
-                  code="ssh-copy-id -i ~/.ssh/vaultx_key.pub user@server"
-                  onCopy={() => handleCopy("ssh-copy-id -i ~/.ssh/vaultx_key.pub user@server", "linux-ssh2")}
-                  copied={copied === "linux-ssh2"}
-                />
-                <p className="text-zinc-400 text-sm mb-2">Set correct permissions:</p>
-                <CodeBlock 
-                  code="chmod 600 ~/.ssh/vaultx_key
-chmod 644 ~/.ssh/vaultx_key.pub"
-                  onCopy={() => handleCopy("chmod 600 ~/.ssh/vaultx_key\nchmod 644 ~/.ssh/vaultx_key.pub", "linux-ssh3")}
-                  copied={copied === "linux-ssh3"}
-                />
+              <p className="text-zinc-400 mb-4">VaultX includes a complete SSH client with identity management:</p>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-zinc-300 text-sm mb-1">Generate SSH identity:</p>
+                  <CodeBlock
+                    code="vx ssh init my-server"
+                    onCopy={() => handleCopy("vx ssh init my-server", "linux-ssh1")}
+                    copied={copied === "linux-ssh1"}
+                  />
+                </div>
+                <div>
+                  <p className="text-zinc-300 text-sm mb-1">Configure server connection:</p>
+                  <CodeBlock
+                    code="vx ssh add my-server user@192.168.1.100"
+                    onCopy={() => handleCopy("vx ssh add my-server user@192.168.1.100", "linux-ssh2")}
+                    copied={copied === "linux-ssh2"}
+                  />
+                </div>
+                <div>
+                  <p className="text-zinc-300 text-sm mb-1">Connect to server:</p>
+                  <CodeBlock
+                    code="vx ssh connect my-server"
+                    onCopy={() => handleCopy("vx ssh connect my-server", "linux-ssh3")}
+                    copied={copied === "linux-ssh3"}
+                  />
+                </div>
+                <div>
+                  <p className="text-zinc-300 text-sm mb-1">Transfer files with SCP:</p>
+                  <CodeBlock
+                    code="vx scp my-server local.txt remote:/path/to/file.txt"
+                    onCopy={() => handleCopy("vx scp my-server local.txt remote:/path/to/file.txt", "linux-ssh4")}
+                    copied={copied === "linux-ssh4"}
+                  />
+                </div>
+                <div>
+                  <p className="text-zinc-300 text-sm mb-1">List SSH identities:</p>
+                  <CodeBlock
+                    code="vx ssh list"
+                    onCopy={() => handleCopy("vx ssh list", "linux-ssh5")}
+                    copied={copied === "linux-ssh5"}
+                  />
+                </div>
               </div>
-            </Section>
-
-            <Section title="6. Passwordless SSH (Optional)">
-              <p className="text-zinc-400 mb-4">For passwordless sudo on remote server:</p>
-              <CodeBlock 
-                code="echo 'username ALL=(ALL) NOPASSWD: ALL' | sudo tee /etc/sudoers.d/username"
-                onCopy={() => handleCopy("echo 'username ALL=(ALL) NOPASSWD: ALL' | sudo tee /etc/sudoers.d/username", "linux-nopasswd")}
-                copied={copied === "linux-nopasswd"}
-              />
-              <p className="text-zinc-400 text-sm mt-2">⚠️ Use with caution - only on trusted systems</p>
             </Section>
           </div>
         )}
@@ -241,75 +279,152 @@ chmod 644 ~/.ssh/vaultx_key.pub"
             </Section>
 
             <Section title="5. SSH Setup">
-              <p className="text-zinc-400 mb-4">Generate and configure SSH keys:</p>
-              <div className="space-y-2">
-                <CodeBlock 
-                  code="vx ssh init my-server"
-                  onCopy={() => handleCopy("vx ssh init my-server", "mac-ssh1")}
-                  copied={copied === "mac-ssh1"}
-                />
-                <p className="text-zinc-400 text-sm mb-2">Add public key to server:</p>
-                <CodeBlock 
-                  code="cat ~/.ssh/vaultx_key.pub | ssh user@server 'cat >> ~/.ssh/authorized_keys'"
-                  onCopy={() => handleCopy("cat ~/.ssh/vaultx_key.pub | ssh user@server 'cat >> ~/.ssh/authorized_keys'", "mac-ssh2")}
-                  copied={copied === "mac-ssh2"}
-                />
-                <p className="text-zinc-400 text-sm mb-2">Set permissions:</p>
-                <CodeBlock 
-                  code="chmod 600 ~/.ssh/vaultx_key
-chmod 644 ~/.ssh/vaultx_key.pub"
-                  onCopy={() => handleCopy("chmod 600 ~/.ssh/vaultx_key\nchmod 644 ~/.ssh/vaultx_key.pub", "mac-ssh3")}
-                  copied={copied === "mac-ssh3"}
-                />
+              <p className="text-zinc-400 mb-4">VaultX includes a complete SSH client with identity management:</p>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-zinc-300 text-sm mb-1">Generate SSH identity:</p>
+                  <CodeBlock
+                    code="vx ssh init my-server"
+                    onCopy={() => handleCopy("vx ssh init my-server", "mac-ssh1")}
+                    copied={copied === "mac-ssh1"}
+                  />
+                </div>
+                <div>
+                  <p className="text-zinc-300 text-sm mb-1">Configure server connection:</p>
+                  <CodeBlock
+                    code="vx ssh add my-server user@192.168.1.100"
+                    onCopy={() => handleCopy("vx ssh add my-server user@192.168.1.100", "mac-ssh2")}
+                    copied={copied === "mac-ssh2"}
+                  />
+                </div>
+                <div>
+                  <p className="text-zinc-300 text-sm mb-1">Connect to server:</p>
+                  <CodeBlock
+                    code="vx ssh connect my-server"
+                    onCopy={() => handleCopy("vx ssh connect my-server", "mac-ssh3")}
+                    copied={copied === "mac-ssh3"}
+                  />
+                </div>
+                <div>
+                  <p className="text-zinc-300 text-sm mb-1">Transfer files with SCP:</p>
+                  <CodeBlock
+                    code="vx scp my-server local.txt remote:/path/to/file.txt"
+                    onCopy={() => handleCopy("vx scp my-server local.txt remote:/path/to/file.txt", "mac-ssh4")}
+                    copied={copied === "mac-ssh4"}
+                  />
+                </div>
+                <div>
+                  <p className="text-zinc-300 text-sm mb-1">List SSH identities:</p>
+                  <CodeBlock
+                    code="vx ssh list"
+                    onCopy={() => handleCopy("vx ssh list", "mac-ssh5")}
+                    copied={copied === "mac-ssh5"}
+                  />
+                </div>
               </div>
-            </Section>
-
-            <Section title="6. Keychain Integration (Optional)">
-              <p className="text-zinc-400 mb-4">Add SSH key to macOS Keychain:</p>
-              <CodeBlock 
-                code="ssh-add --apple-use-keychain ~/.ssh/vaultx_key"
-                onCopy={() => handleCopy("ssh-add --apple-use-keychain ~/.ssh/vaultx_key", "mac-keychain")}
-                copied={copied === "mac-keychain"}
-              />
             </Section>
           </div>
         )}
 
         {/* Quick Start */}
         <div className="mt-16 bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/20 rounded-xl p-8">
-          <h2 className="text-3xl font-bold mb-4">Quick Start</h2>
-          <div className="space-y-4">
-            <div>
-              <p className="text-zinc-400 mb-2">Initialize a project:</p>
-              <CodeBlock 
-                code="vx init my-project"
-                onCopy={() => handleCopy("vx init my-project", "qs-init")}
-                copied={copied === "qs-init"}
-              />
+          <h2 className="text-3xl font-bold mb-6">Quick Start</h2>
+
+          <div className="mb-8">
+            <h3 className="text-xl font-bold text-cyan-400 mb-4">Secrets Management</h3>
+            <div className="space-y-4">
+              <div>
+                <p className="text-zinc-400 mb-2">Initialize a project:</p>
+                <CodeBlock
+                  code="vx init my-project"
+                  onCopy={() => handleCopy("vx init my-project", "qs-init")}
+                  copied={copied === "qs-init"}
+                />
+              </div>
+              <div>
+                <p className="text-zinc-400 mb-2">Add a secret:</p>
+                <CodeBlock
+                  code="vx add my-project API_KEY"
+                  onCopy={() => handleCopy("vx add my-project API_KEY", "qs-add")}
+                  copied={copied === "qs-add"}
+                />
+              </div>
+              <div>
+                <p className="text-zinc-400 mb-2">Retrieve a secret:</p>
+                <CodeBlock
+                  code="vx get my-project API_KEY"
+                  onCopy={() => handleCopy("vx get my-project API_KEY", "qs-get")}
+                  copied={copied === "qs-get"}
+                />
+              </div>
+              <div>
+                <p className="text-zinc-400 mb-2">List all vault contents:</p>
+                <CodeBlock
+                  code="vx list"
+                  onCopy={() => handleCopy("vx list", "qs-list")}
+                  copied={copied === "qs-list"}
+                />
+              </div>
             </div>
-            <div>
-              <p className="text-zinc-400 mb-2">Add a secret:</p>
-              <CodeBlock 
-                code="vx add my-project API_KEY"
-                onCopy={() => handleCopy("vx add my-project API_KEY", "qs-add")}
-                copied={copied === "qs-add"}
-              />
+          </div>
+
+          <div className="mb-8">
+            <h3 className="text-xl font-bold text-purple-400 mb-4">SSH Management</h3>
+            <div className="space-y-4">
+              <div>
+                <p className="text-zinc-400 mb-2">Generate SSH identity:</p>
+                <CodeBlock
+                  code="vx ssh init production"
+                  onCopy={() => handleCopy("vx ssh init production", "qs-ssh-init")}
+                  copied={copied === "qs-ssh-init"}
+                />
+              </div>
+              <div>
+                <p className="text-zinc-400 mb-2">Configure server:</p>
+                <CodeBlock
+                  code="vx ssh add production ubuntu@prod.example.com"
+                  onCopy={() => handleCopy("vx ssh add production ubuntu@prod.example.com", "qs-ssh-add")}
+                  copied={copied === "qs-ssh-add"}
+                />
+              </div>
+              <div>
+                <p className="text-zinc-400 mb-2">Connect to server:</p>
+                <CodeBlock
+                  code="vx ssh connect production"
+                  onCopy={() => handleCopy("vx ssh connect production", "qs-ssh-connect")}
+                  copied={copied === "qs-ssh-connect"}
+                />
+              </div>
+              <div>
+                <p className="text-zinc-400 mb-2">Transfer files:</p>
+                <CodeBlock
+                  code="vx scp production deploy.zip remote:/var/www/app/"
+                  onCopy={() => handleCopy("vx scp production deploy.zip remote:/var/www/app/", "qs-scp")}
+                  copied={copied === "qs-scp"}
+                />
+              </div>
             </div>
-            <div>
-              <p className="text-zinc-400 mb-2">Retrieve a secret:</p>
-              <CodeBlock 
-                code="vx get my-project API_KEY"
-                onCopy={() => handleCopy("vx get my-project API_KEY", "qs-get")}
-                copied={copied === "qs-get"}
-              />
-            </div>
-            <div>
-              <p className="text-zinc-400 mb-2">Run security audit:</p>
-              <CodeBlock 
-                code="vx audit"
-                onCopy={() => handleCopy("vx audit", "qs-audit")}
-                copied={copied === "qs-audit"}
-              />
+          </div>
+
+          <div>
+            <h3 className="text-xl font-bold text-green-400 mb-4">Maintenance</h3>
+            <div className="space-y-4">
+              <div>
+                <p className="text-zinc-400 mb-2">Run security audit:</p>
+                <CodeBlock
+                  code="vx audit"
+                  onCopy={() => handleCopy("vx audit", "qs-audit")}
+                  copied={copied === "qs-audit"}
+                />
+              </div>
+              <div>
+                <p className="text-zinc-400 mb-2">Update VaultX:</p>
+                <CodeBlock
+                  code="vx update"
+                  onCopy={() => handleCopy("vx update", "qs-update")}
+                  copied={copied === "qs-update"}
+                />
+              </div>
             </div>
           </div>
         </div>

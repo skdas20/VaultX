@@ -154,6 +154,14 @@ jobs:
           mv temp_binaries/* .
           rmdir temp_binaries
           echo ""
+          echo "=== Creating generic binary names for self-update ==="
+          # self_update crate expects: vx (Linux/macOS) or vx.exe (Windows)
+          # Create copies with generic names for each platform
+          cp vx-x86_64-unknown-linux-gnu vx-x86_64-unknown-linux-gnu-generic
+          cp vx-x86_64-apple-darwin vx-x86_64-apple-darwin-generic
+          cp vx-aarch64-apple-darwin vx-aarch64-apple-darwin-generic
+          cp vx-x86_64-pc-windows-msvc.exe vx-x86_64-pc-windows-msvc-generic.exe
+          echo ""
           echo "=== Files ready for release ==="
           ls -lh
           echo ""
