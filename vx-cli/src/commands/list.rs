@@ -15,16 +15,42 @@ pub fn execute() -> Result<(), CliError> {
     // Load vault
     let (vault, _key) = storage::load_vault_with_key_auto()?;
 
-    if vault.projects.is_empty() {
-        println!("No projects in vault.");
+    let has_projects = !vault.projects.is_empty();
+    let has_ssh = !vault.ssh_identities.is_empty();
+    let has_servers = !vault.ssh_servers.is_empty();
+
+    if !has_projects && !has_ssh && !has_servers {
+        println!("Vault is empty.");
         return Ok(());
     }
 
-    println!("Projects in vault:");
-    for (name, project) in &vault.projects {
-        let secret_count = project.secrets.len();
-        let secret_word = if secret_count == 1 { "secret" } else { "secrets" };
-        println!("  • {} ({} {})", name, secret_count, secret_word);
+    // Show projects
+    if has_projects {
+        println!("Projects:");
+        for (name, project) in &vault.projects {
+            let secret_count = project.secrets.len();
+            let secret_word = if secret_count == 1 { "secret" } else { "secrets" };
+            println!("  • {} ({} {})", name, secret_count, secret_word);
+        }
+        println!();
+    }
+
+    // Show SSH identities
+    if has_ssh {
+        println!("SSH Identities:");
+        for name in vault.ssh_identities.keys() {
+            println!("  • {}", name);
+        }
+        println!();
+    }
+
+    // Show SSH servers
+    if has_servers {
+        println!("SSH Servers:");
+        for (name, server) in &vault.ssh_servers {
+            println!("  • {} → {}@{} (using identity: {})",
+                name, server.username, server.ip_address, server.identity_name);
+        }
     }
 
     Ok(())
