@@ -154,13 +154,17 @@ pub fn save_vault(vault: &Vault, password: &[u8]) -> Result<(), CliError> {
     let path = vault_path()?;
     let dir = vault_dir()?;
 
-    // Ensure directory exists
+    // Ensure directory exists. One created by an older version may still be
+    // readable by other users, so tighten it too.
     if !dir.exists() {
         create_private_dir(&dir)?;
+    } else {
+        restrict_permissions(&dir, 0o700)?;
     }
 
     // Extract existing salt if vault exists, otherwise None for new vault
     let existing_salt = if path.exists() {
+        restrict_permissions(&path, 0o600)?;
         Some(extract_salt()?)
     } else {
         None
@@ -200,6 +204,23 @@ fn create_private_dir(dir: &Path) -> std::io::Result<()> {
     }
 
     builder.create(dir)
+}
+
+/// Sets an existing `path` to `mode` on Unix when its current mode allows
+/// group or other access. Does nothing on other platforms.
+fn restrict_permissions(path: &Path, mode: u32) -> std::io::Result<()> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        if fs::metadata(path)?.permissions().mode() & 0o077 != 0 {
+            fs::set_permissions(path, fs::Permissions::from_mode(mode))?;
+        }
+    }
+
+    #[cfg(not(unix))]
+    let _ = (path, mode);
+
+    Ok(())
 }
 
 /// Writes `data` to a new file at `path`, readable only by the owner on Unix.
@@ -249,6 +270,35 @@ mod tests {
         create_private_dir(&dir).unwrap();
 
         assert_eq!(mode(&dir), 0o700);
+    }
+
+    #[test]
+    fn existing_open_dir_and_vault_are_restricted() {
+        let tmp = tempfile::tempdir().unwrap();
+        let dir = tmp.path().join(VAULT_DIR);
+        let path = dir.join(VAULT_FILE);
+        fs::create_dir(&dir).unwrap();
+        fs::set_permissions(&dir, fs::Permissions::from_mode(0o755)).unwrap();
+        fs::write(&path, b"data").unwrap();
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o644)).unwrap();
+
+        restrict_permissions(&dir, 0o700).unwrap();
+        restrict_permissions(&path, 0o600).unwrap();
+
+        assert_eq!(mode(&dir), 0o700);
+        assert_eq!(mode(&path), 0o600);
+    }
+
+    #[test]
+    fn owner_only_mode_is_left_alone() {
+        let tmp = tempfile::tempdir().unwrap();
+        let path = tmp.path().join(VAULT_FILE);
+        fs::write(&path, b"data").unwrap();
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o400)).unwrap();
+
+        restrict_permissions(&path, 0o600).unwrap();
+
+        assert_eq!(mode(&path), 0o400);
     }
 
     #[test]
